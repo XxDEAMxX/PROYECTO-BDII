@@ -49,10 +49,6 @@ PROMPT === PASO 8: Implementando sistema de control de auditoría ===
 @@13_audit_control.sql
 
 PROMPT 
-PROMPT === PASO 9: Creando tabla de reportes y procedimientos de análisis ===
-@@17_reports_table.sql
-
-PROMPT 
 PROMPT ===============================================
 PROMPT INSTALACIÓN COMPLETADA EXITOSAMENTE
 PROMPT Sistema completo con validación de fechas, auditoría y reportes
@@ -81,26 +77,20 @@ PROMPT Para probar auditoría: @@14_test_audit.sql
 PROMPT Para consultas de auditoría: @@15_audit_queries.sql
 PROMPT Para verificación final: @@16_final_verification.sql
 PROMPT 
-PROMPT === NUEVAS FUNCIONALIDADES AGREGADAS ===
+PROMPT === FUNCIONALIDADES IMPLEMENTADAS ===
 PROMPT 
 PROMPT • Función VALIDATE_LOAD_DATE - Validación de fechas laborales
-PROMPT • Paquete PKG_VEHICLES_MANAGEMENT - Organización de lógica de negocio
+PROMPT • Paquete PKG_VEHICLES_MANAGEMENT - Organización de lógica de negocio  
 PROMPT • Tabla VEHICLE_REPORTS - Reportes estadísticos con rango de fechas
 PROMPT • Procedimiento SP_GENERATE_VEHICLE_REPORT - Generación de reportes
+PROMPT • Vista VW_VEHICLE_REPORTS - Consulta fácil de reportes
 PROMPT 
 PROMPT === EJEMPLOS DE USO ===
 PROMPT 
-PROMPT -- Validar fecha de carga:
-PROMPT SELECT VALIDATE_LOAD_DATE(SYSDATE) FROM DUAL;
-PROMPT 
-PROMPT -- Carga completa con validación via paquete:
-PROMPT EXEC PKG_VEHICLES_MANAGEMENT.EXECUTE_FULL_LOAD(SYSDATE);
-PROMPT 
-PROMPT -- Generar reporte por fabricante:
-PROMPT EXEC SP_GENERATE_VEHICLE_REPORT(DATE'2021-01-01', DATE'2021-12-31', 'BY_MANUFACTURER');
-PROMPT 
-PROMPT -- Consultar reportes generados:
-PROMPT SELECT * FROM VW_VEHICLE_REPORTS;
+PROMPT -- Validar fecha: SELECT VALIDATE_LOAD_DATE(SYSDATE) FROM DUAL;
+PROMPT -- Carga via paquete: EXEC PKG_VEHICLES_MANAGEMENT.EXECUTE_FULL_LOAD(SYSDATE);
+PROMPT -- Generar reporte: EXEC SP_GENERATE_VEHICLE_REPORT(DATE'2021-01-01', DATE'2021-12-31');
+PROMPT -- Ver reportes: SELECT * FROM VW_VEHICLE_REPORTS;
 PROMPT 
 PROMPT ===============================================
 

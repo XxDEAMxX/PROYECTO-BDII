@@ -50,10 +50,13 @@ MASTER_INSTALL.sql       # Script maestro de instalación (ACTUALIZADO)
 15_audit_queries.sql     # Consultas útiles de auditoría
 ```
 
-### Sistema de Reportes y Validaciones (NUEVO)
+### ✅ Reorganización Completada: Funcionalidades Integradas
 ```
-17_reports_table.sql     # Tabla de reportes y procedimientos de análisis
-18_test_new_features.sql # Pruebas de nuevas funcionalidades
+Los nuevos componentes están ahora integrados en sus scripts correspondientes:
+• Tabla VEHICLE_REPORTS → 03_tables.sql
+• Secuencia SEQ_VEHICLE_REPORTS → 02_sequences.sql  
+• Procedimiento SP_GENERATE_VEHICLE_REPORT → 06_procedures.sql
+• Vista VW_VEHICLE_REPORTS → 08_views.sql
 ```
 
 ### Scripts de Consultas y Mantenimiento
@@ -91,7 +94,6 @@ load-data.bat            # Batch file para carga de datos
 @06_procedures.sql        -- Incluye funciones y paquetes PL/SQL
 @08_views.sql
 @13_audit_control.sql     -- Sistema de auditoría
-@17_reports_table.sql     -- Sistema de reportes (NUEVO)
 ```
 
 ## 🆕 Nuevas Funcionalidades Implementadas
@@ -215,9 +217,11 @@ sqlldr CARS_USER/A123@XE control=11_load_csv.ctl log=load_csv.log
 
 ## 🧪 Pruebas y Verificación
 
-### Probar Nuevas Funcionalidades (NUEVO)
+### Pruebas de Validación y Reportes
 ```sql
-@18_test_new_features.sql
+-- Las pruebas están integradas en los archivos de pruebas generales
+@12_full_test.sql     -- Incluye pruebas de todas las funcionalidades
+@16_final_verification.sql  -- Verificación completa del sistema
 ```
 
 ### Probar el Sistema de Auditoría
