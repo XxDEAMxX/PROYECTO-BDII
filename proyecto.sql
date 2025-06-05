@@ -1,346 +1,459 @@
-CREATE TABLESPACE ts_datos
-  DATAFILE 'ts_datos01.dbf' SIZE 300M AUTOEXTEND ON NEXT 10M MAXSIZE UNLIMITED;
+CREATE TABLESPACE TS_DATOS
+   DATAFILE 'ts_datos01.dbf' SIZE 300M
+   AUTOEXTEND ON NEXT 10M MAXSIZE UNLIMITED;
 
 -- Tablespace para índices
-CREATE TABLESPACE ts_indices
-  DATAFILE 'ts_indices01.dbf' SIZE 50M AUTOEXTEND ON NEXT 10M MAXSIZE UNLIMITED;
+CREATE TABLESPACE TS_INDICES
+   DATAFILE 'ts_indices01.dbf' SIZE 50M
+   AUTOEXTEND ON NEXT 10M MAXSIZE UNLIMITED;
 
 
--- Crear usuario (ajusta el nombre y contraseña según tu grupo)
-CREATE USER cars_user IDENTIFIED BY a123
-  DEFAULT TABLESPACE ts_datos
-  TEMPORARY TABLESPACE TEMP
-  QUOTA UNLIMITED ON ts_datos
-  QUOTA UNLIMITED ON ts_indices;
+-- Crear usuario
+CREATE USER CARS_USER IDENTIFIED BY A123
+   DEFAULT TABLESPACE TS_DATOS
+   TEMPORARY TABLESPACE TEMP
+   QUOTA UNLIMITED ON TS_DATOS
+   QUOTA UNLIMITED ON TS_INDICES;
 
 -- Permisos mínimos necesarios
-GRANT CREATE SESSION TO cars_user;
-GRANT CREATE TABLE TO cars_user;
-GRANT CREATE VIEW TO cars_user;
-GRANT CREATE PROCEDURE TO cars_user;
-GRANT CREATE TRIGGER TO cars_user;
-GRANT CREATE SEQUENCE TO cars_user;
-GRANT CREATE SYNONYM TO cars_user;
+GRANT
+   CREATE SESSION
+TO CARS_USER;
+GRANT
+   CREATE TABLE
+TO CARS_USER;
+GRANT
+   CREATE VIEW
+TO CARS_USER;
+GRANT
+   CREATE PROCEDURE
+TO CARS_USER;
+GRANT
+   CREATE TRIGGER
+TO CARS_USER;
+GRANT
+   CREATE SEQUENCE
+TO CARS_USER;
+GRANT
+   CREATE SYNONYM
+TO CARS_USER;
 
-CREATE TABLE tmp_craigslist_vehicles (
-  id NUMBER,
-  url VARCHAR2(1000),
-  region VARCHAR2(100),
-  region_url VARCHAR2(100),
-  price NUMBER,
-  year_data NUMBER,
-  manufacturer VARCHAR2(100),
-  model VARCHAR2(300),
-  condition VARCHAR2(50),
-  cylinders VARCHAR2(50),
-  fuel VARCHAR2(50),
-  odometer NUMBER,
-  title_status VARCHAR2(50),
-  transmission VARCHAR2(50),    
-  VIN VARCHAR2(50),
-  drive VARCHAR2(50),
-  size_data VARCHAR2(50),
-  type_data VARCHAR2(50),
-  paint_color VARCHAR2(50),
-  image_url VARCHAR2(1000),
-  description_data CLOB,
-  country VARCHAR2(100),
-  state_data VARCHAR2(50),
-  lat NUMBER,
-  longitude NUMBER,
-  posting_date VARCHAR2(100)
-) TABLESPACE ts_datos;
+CREATE TABLE TMP_CRAIGSLIST_VEHICLES (
+   ID               NUMBER,
+   URL              VARCHAR2(1000),
+   REGION           VARCHAR2(100),
+   REGION_URL       VARCHAR2(100),
+   PRICE            NUMBER,
+   YEAR_DATA        NUMBER,
+   MANUFACTURER     VARCHAR2(100),
+   MODEL            VARCHAR2(300),
+   CONDITION        VARCHAR2(50),
+   CYLINDERS        VARCHAR2(50),
+   FUEL             VARCHAR2(50),
+   ODOMETER         NUMBER,
+   TITLE_STATUS     VARCHAR2(50),
+   TRANSMISSION     VARCHAR2(50),
+   VIN              VARCHAR2(50),
+   DRIVE            VARCHAR2(50),
+   SIZE_DATA        VARCHAR2(50),
+   TYPE_DATA        VARCHAR2(50),
+   PAINT_COLOR      VARCHAR2(50),
+   IMAGE_URL        VARCHAR2(1000),
+   DESCRIPTION_DATA CLOB,
+   COUNTRY          VARCHAR2(100),
+   STATE_DATA       VARCHAR2(50),
+   LAT              NUMBER,
+   LONGITUDE        NUMBER,
+   POSTING_DATE     VARCHAR2(100)
+)
+TABLESPACE TS_DATOS;
 
 -------
 
+CREATE SEQUENCE SEQ_VEHICLES_ID START WITH 1 INCREMENT BY 1 NOCACHE;
 -- Tabla principal de vehículos
-CREATE TABLE vehicles (
-  id NUMBER,
-  url VARCHAR2(1000),
-  region_id NUMBER,
-  price NUMBER,
-  year NUMBER,
-  manufacturer_id NUMBER,
-  model VARCHAR2(300),
-  condition_id NUMBER,
-  cylinders_id NUMBER,
-  fuel_id NUMBER,
-  odometer NUMBER,
-  title_status_id NUMBER,
-  transmission_id NUMBER,
-  vin VARCHAR2(50),
-  drive_id NUMBER,
-  size_id NUMBER,
-  type_id NUMBER,
-  paint_color_id NUMBER,
-  image_url VARCHAR2(1000),
-  description_data CLOB,
-  posting_date DATE
+CREATE TABLE VEHICLES (
+   ID               NUMBER DEFAULT SEQ_VEHICLES_ID.NEXTVAL,
+   URL              VARCHAR2(1000),
+   REGION_ID        NUMBER,
+   PRICE            NUMBER,
+   YEAR             NUMBER,
+   MANUFACTURER_ID  NUMBER,
+   MODEL            VARCHAR2(300),
+   CONDITION_ID     NUMBER,
+   CYLINDERS_ID     NUMBER,
+   FUEL_ID          NUMBER,
+   ODOMETER         NUMBER,
+   TITLE_STATUS_ID  NUMBER,
+   TRANSMISSION_ID  NUMBER,
+   VIN              VARCHAR2(50),
+   DRIVE_ID         NUMBER,
+   SIZE_ID          NUMBER,
+   TYPE_ID          NUMBER,
+   PAINT_COLOR_ID   NUMBER,
+   IMAGE_URL        VARCHAR2(1000),
+   DESCRIPTION_DATA CLOB,
+   POSTING_DATE     DATE
 );
 
+CREATE SEQUENCE SEQ_REGIONS_ID START WITH 1 INCREMENT BY 1 NOCACHE;
 -- Tabla de regiones
-CREATE TABLE regions (
-  id NUMBER,
-  region VARCHAR2(100),
-  region_url VARCHAR2(100),
-  country VARCHAR2(100),
-  state_data VARCHAR2(50),
-  lat NUMBER,
-  longitude NUMBER
+CREATE TABLE REGIONS (
+   ID         NUMBER DEFAULT SEQ_REGIONS_ID.NEXTVAL,
+   REGION     VARCHAR2(100),
+   REGION_URL VARCHAR2(100),
+   COUNTRY    VARCHAR2(100),
+   STATE_DATA VARCHAR2(50),
+   LAT        NUMBER,
+   LONGITUDE  NUMBER
 );
 
+CREATE SEQUENCE SEQ_MANUFACTURERS_ID START WITH 1 INCREMENT BY 1 NOCACHE;
 -- Tabla de fabricantes
-CREATE TABLE manufacturers (
-  id NUMBER,
-  name VARCHAR2(100)
+CREATE TABLE MANUFACTURERS (
+   ID   NUMBER DEFAULT SEQ_MANUFACTURERS_ID.NEXTVAL,
+   NAME VARCHAR2(100)
 );
 
+CREATE SEQUENCE SEQ_CONDITIONS_ID START WITH 1 INCREMENT BY 1 NOCACHE;
 -- Tablas para atributos categóricos
-CREATE TABLE conditions (
-  id NUMBER,
-  name VARCHAR2(50)
+CREATE TABLE CONDITIONS (
+   ID   NUMBER DEFAULT SEQ_CONDITIONS_ID.NEXTVAL,
+   NAME VARCHAR2(50)
 );
 
-CREATE TABLE cylinders (
-  id NUMBER,
-  name VARCHAR2(50)
+CREATE SEQUENCE SEQ_CYLINDERS_ID START WITH 1 INCREMENT BY 1 NOCACHE;
+CREATE TABLE CYLINDERS (
+   ID   NUMBER DEFAULT SEQ_CYLINDERS_ID.NEXTVAL,
+   NAME VARCHAR2(50)
 );
 
-CREATE TABLE fuels (
-  id NUMBER,
-  name VARCHAR2(50)
+CREATE SEQUENCE SEQ_FUELS_ID START WITH 1 INCREMENT BY 1 NOCACHE;
+CREATE TABLE FUELS (
+   ID   NUMBER DEFAULT SEQ_FUELS_ID.NEXTVAL,
+   NAME VARCHAR2(50)
 );
 
-CREATE TABLE title_statuses (
-  id NUMBER,
-  name VARCHAR2(50)
+CREATE SEQUENCE SEQ_TITLE_STATUSES_ID START WITH 1 INCREMENT BY 1 NOCACHE;
+CREATE TABLE TITLE_STATUSES (
+   ID   NUMBER DEFAULT SEQ_TITLE_STATUSES_ID.NEXTVAL,
+   NAME VARCHAR2(50)
 );
 
-CREATE TABLE transmissions (
-  id NUMBER,
-  name VARCHAR2(50)
+CREATE SEQUENCE SEQ_TRANSMISSIONS_ID START WITH 1 INCREMENT BY 1 NOCACHE;
+CREATE TABLE TRANSMISSIONS (
+   ID   NUMBER DEFAULT SEQ_TRANSMISSIONS_ID.NEXTVAL,
+   NAME VARCHAR2(50)
 );
 
-CREATE TABLE drives (
-  id NUMBER,
-  name VARCHAR2(50)
+CREATE SEQUENCE SEQ_DRIVES_ID START WITH 1 INCREMENT BY 1 NOCACHE;
+CREATE TABLE DRIVES (
+   ID   NUMBER DEFAULT SEQ_DRIVES_ID.NEXTVAL,
+   NAME VARCHAR2(50)
 );
 
-CREATE TABLE sizes (
-  id NUMBER,
-  name VARCHAR2(50)
+CREATE SEQUENCE SEQ_SIZES_ID START WITH 1 INCREMENT BY 1 NOCACHE;
+CREATE TABLE SIZES (
+   ID   NUMBER DEFAULT SEQ_SIZES_ID.NEXTVAL,
+   NAME VARCHAR2(50)
 );
 
-CREATE TABLE types (
-  id NUMBER,
-  name VARCHAR2(50)
+CREATE SEQUENCE SEQ_TYPES_ID START WITH 1 INCREMENT BY 1 NOCACHE;
+CREATE TABLE TYPES (
+   ID   NUMBER DEFAULT SEQ_TYPES_ID.NEXTVAL,
+   NAME VARCHAR2(50)
 );
 
-CREATE TABLE paint_colors (
-  id NUMBER,
-  name VARCHAR2(50)
+CREATE SEQUENCE SEQ_PAINT_COLORS_ID START WITH 1 INCREMENT BY 1 NOCACHE;
+CREATE TABLE PAINT_COLORS (
+   ID   NUMBER DEFAULT SEQ_PAINT_COLORS_ID.NEXTVAL,
+   NAME VARCHAR2(50)
 );
 
 
 -- PRIMARY KEYS
-ALTER TABLE vehicles ADD CONSTRAINT pk_vehicles PRIMARY KEY (id);
-ALTER TABLE regions ADD CONSTRAINT pk_regions PRIMARY KEY (id);
-ALTER TABLE manufacturers ADD CONSTRAINT pk_manufacturers PRIMARY KEY (id);
-ALTER TABLE conditions ADD CONSTRAINT pk_conditions PRIMARY KEY (id);
-ALTER TABLE cylinders ADD CONSTRAINT pk_cylinders PRIMARY KEY (id);
-ALTER TABLE fuels ADD CONSTRAINT pk_fuels PRIMARY KEY (id);
-ALTER TABLE title_statuses ADD CONSTRAINT pk_title_statuses PRIMARY KEY (id);
-ALTER TABLE transmissions ADD CONSTRAINT pk_transmissions PRIMARY KEY (id);
-ALTER TABLE drives ADD CONSTRAINT pk_drives PRIMARY KEY (id);
-ALTER TABLE sizes ADD CONSTRAINT pk_sizes PRIMARY KEY (id);
-ALTER TABLE types ADD CONSTRAINT pk_types PRIMARY KEY (id);
-ALTER TABLE paint_colors ADD CONSTRAINT pk_paint_colors PRIMARY KEY (id);
+ALTER TABLE VEHICLES ADD CONSTRAINT PK_VEHICLES PRIMARY KEY ( ID );
+ALTER TABLE REGIONS ADD CONSTRAINT PK_REGIONS PRIMARY KEY ( ID );
+ALTER TABLE MANUFACTURERS ADD CONSTRAINT PK_MANUFACTURERS PRIMARY KEY ( ID );
+ALTER TABLE CONDITIONS ADD CONSTRAINT PK_CONDITIONS PRIMARY KEY ( ID );
+ALTER TABLE CYLINDERS ADD CONSTRAINT PK_CYLINDERS PRIMARY KEY ( ID );
+ALTER TABLE FUELS ADD CONSTRAINT PK_FUELS PRIMARY KEY ( ID );
+ALTER TABLE TITLE_STATUSES ADD CONSTRAINT PK_TITLE_STATUSES PRIMARY KEY ( ID );
+ALTER TABLE TRANSMISSIONS ADD CONSTRAINT PK_TRANSMISSIONS PRIMARY KEY ( ID );
+ALTER TABLE DRIVES ADD CONSTRAINT PK_DRIVES PRIMARY KEY ( ID );
+ALTER TABLE SIZES ADD CONSTRAINT PK_SIZES PRIMARY KEY ( ID );
+ALTER TABLE TYPES ADD CONSTRAINT PK_TYPES PRIMARY KEY ( ID );
+ALTER TABLE PAINT_COLORS ADD CONSTRAINT PK_PAINT_COLORS PRIMARY KEY ( ID );
 
 -- FOREIGN KEYS
-ALTER TABLE vehicles ADD CONSTRAINT fk_vehicle_region FOREIGN KEY (region_id) REFERENCES regions(id);
-ALTER TABLE vehicles ADD CONSTRAINT fk_vehicle_manufacturer FOREIGN KEY (manufacturer_id) REFERENCES manufacturers(id);
-ALTER TABLE vehicles ADD CONSTRAINT fk_vehicle_condition FOREIGN KEY (condition_id) REFERENCES conditions(id);
-ALTER TABLE vehicles ADD CONSTRAINT fk_vehicle_cylinders FOREIGN KEY (cylinders_id) REFERENCES cylinders(id);
-ALTER TABLE vehicles ADD CONSTRAINT fk_vehicle_fuel FOREIGN KEY (fuel_id) REFERENCES fuels(id);
-ALTER TABLE vehicles ADD CONSTRAINT fk_vehicle_title FOREIGN KEY (title_status_id) REFERENCES title_statuses(id);
-ALTER TABLE vehicles ADD CONSTRAINT fk_vehicle_transmission FOREIGN KEY (transmission_id) REFERENCES transmissions(id);
-ALTER TABLE vehicles ADD CONSTRAINT fk_vehicle_drive FOREIGN KEY (drive_id) REFERENCES drives(id);
-ALTER TABLE vehicles ADD CONSTRAINT fk_vehicle_size FOREIGN KEY (size_id) REFERENCES sizes(id);
-ALTER TABLE vehicles ADD CONSTRAINT fk_vehicle_type FOREIGN KEY (type_id) REFERENCES types(id);
-ALTER TABLE vehicles ADD CONSTRAINT fk_vehicle_color FOREIGN KEY (paint_color_id) REFERENCES paint_colors(id);
+ALTER TABLE VEHICLES
+   ADD CONSTRAINT FK_VEHICLE_REGION FOREIGN KEY ( REGION_ID )
+      REFERENCES REGIONS ( ID );
+ALTER TABLE VEHICLES
+   ADD CONSTRAINT FK_VEHICLE_MANUFACTURER FOREIGN KEY ( MANUFACTURER_ID )
+      REFERENCES MANUFACTURERS ( ID );
+ALTER TABLE VEHICLES
+   ADD CONSTRAINT FK_VEHICLE_CONDITION FOREIGN KEY ( CONDITION_ID )
+      REFERENCES CONDITIONS ( ID );
+ALTER TABLE VEHICLES
+   ADD CONSTRAINT FK_VEHICLE_CYLINDERS FOREIGN KEY ( CYLINDERS_ID )
+      REFERENCES CYLINDERS ( ID );
+ALTER TABLE VEHICLES
+   ADD CONSTRAINT FK_VEHICLE_FUEL FOREIGN KEY ( FUEL_ID )
+      REFERENCES FUELS ( ID );
+ALTER TABLE VEHICLES
+   ADD CONSTRAINT FK_VEHICLE_TITLE FOREIGN KEY ( TITLE_STATUS_ID )
+      REFERENCES TITLE_STATUSES ( ID );
+ALTER TABLE VEHICLES
+   ADD CONSTRAINT FK_VEHICLE_TRANSMISSION FOREIGN KEY ( TRANSMISSION_ID )
+      REFERENCES TRANSMISSIONS ( ID );
+ALTER TABLE VEHICLES
+   ADD CONSTRAINT FK_VEHICLE_DRIVE FOREIGN KEY ( DRIVE_ID )
+      REFERENCES DRIVES ( ID );
+ALTER TABLE VEHICLES
+   ADD CONSTRAINT FK_VEHICLE_SIZE FOREIGN KEY ( SIZE_ID )
+      REFERENCES SIZES ( ID );
+ALTER TABLE VEHICLES
+   ADD CONSTRAINT FK_VEHICLE_TYPE FOREIGN KEY ( TYPE_ID )
+      REFERENCES TYPES ( ID );
+ALTER TABLE VEHICLES
+   ADD CONSTRAINT FK_VEHICLE_COLOR FOREIGN KEY ( PAINT_COLOR_ID )
+      REFERENCES PAINT_COLORS ( ID );
 
 -- UNIQUE CONSTRAINTS (Ejemplo: evitar nombres repetidos en atributos categóricos)
-ALTER TABLE manufacturers ADD CONSTRAINT uq_manufacturer_name UNIQUE (name);
-ALTER TABLE conditions ADD CONSTRAINT uq_condition_name UNIQUE (name);
-ALTER TABLE cylinders ADD CONSTRAINT uq_cylinders_name UNIQUE (name);
-ALTER TABLE fuels ADD CONSTRAINT uq_fuel_name UNIQUE (name);
-ALTER TABLE title_statuses ADD CONSTRAINT uq_title_status_name UNIQUE (name);
-ALTER TABLE transmissions ADD CONSTRAINT uq_transmission_name UNIQUE (name);
-ALTER TABLE drives ADD CONSTRAINT uq_drive_name UNIQUE (name);
-ALTER TABLE sizes ADD CONSTRAINT uq_size_name UNIQUE (name);
-ALTER TABLE types ADD CONSTRAINT uq_type_name UNIQUE (name);
-ALTER TABLE paint_colors ADD CONSTRAINT uq_paint_color_name UNIQUE (name);
+ALTER TABLE MANUFACTURERS ADD CONSTRAINT UQ_MANUFACTURER_NAME UNIQUE ( NAME );
+ALTER TABLE CONDITIONS ADD CONSTRAINT UQ_CONDITION_NAME UNIQUE ( NAME );
+ALTER TABLE CYLINDERS ADD CONSTRAINT UQ_CYLINDERS_NAME UNIQUE ( NAME );
+ALTER TABLE FUELS ADD CONSTRAINT UQ_FUEL_NAME UNIQUE ( NAME );
+ALTER TABLE TITLE_STATUSES ADD CONSTRAINT UQ_TITLE_STATUS_NAME UNIQUE ( NAME );
+ALTER TABLE TRANSMISSIONS ADD CONSTRAINT UQ_TRANSMISSION_NAME UNIQUE ( NAME );
+ALTER TABLE DRIVES ADD CONSTRAINT UQ_DRIVE_NAME UNIQUE ( NAME );
+ALTER TABLE SIZES ADD CONSTRAINT UQ_SIZE_NAME UNIQUE ( NAME );
+ALTER TABLE TYPES ADD CONSTRAINT UQ_TYPE_NAME UNIQUE ( NAME );
+ALTER TABLE PAINT_COLORS ADD CONSTRAINT UQ_PAINT_COLOR_NAME UNIQUE ( NAME );
 
 -- CHECK CONSTRAINTS (Ejemplo: año válido y odómetro positivo)
 -- ALTER TABLE vehicles ADD CONSTRAINT chk_year_valid CHECK (year BETWEEN 1900 AND EXTRACT(YEAR FROM SYSDATE));
-ALTER TABLE vehicles ADD CONSTRAINT chk_odometer_positive CHECK (odometer >= 0);
+ALTER TABLE VEHICLES ADD CONSTRAINT CHK_ODOMETER_POSITIVE CHECK ( ODOMETER >= 0 );
 
-
+-- Bloque anónimo corregido con validaciones y uso de secuencias automáticas
 DECLARE
-  v_region_id         NUMBER;
-  v_manufacturer_id   NUMBER;
-  v_condition_id      NUMBER;
-  v_cylinders_id      NUMBER;
-  v_fuel_id           NUMBER;
-  v_title_status_id   NUMBER;
-  v_transmission_id   NUMBER;
-  v_drive_id          NUMBER;
-  v_size_id           NUMBER;
-  v_type_id           NUMBER;
-  v_paint_color_id    NUMBER;
+   v_region_id       NUMBER;
+   v_manufacturer_id NUMBER;
+   v_condition_id    NUMBER;
+   v_cylinders_id    NUMBER;
+   v_fuel_id         NUMBER;
+   v_title_status_id NUMBER;
+   v_transmission_id NUMBER;
+   v_drive_id        NUMBER;
+   v_size_id         NUMBER;
+   v_type_id         NUMBER;
+   v_paint_color_id  NUMBER;
 BEGIN
-  FOR rec IN (
-    SELECT * FROM tmp_craigslist_vehicles
-  ) LOOP
-    -- Región
-    BEGIN
-      SELECT id INTO v_region_id FROM regions
-      WHERE region = rec.region AND region_url = rec.region_url
-        AND country = rec.country AND state_data = rec.state_data
-        AND lat = rec.lat AND longitude = rec.longitude;
-    EXCEPTION
-      WHEN NO_DATA_FOUND THEN
-        SELECT NVL(MAX(id), 0) + 1 INTO v_region_id FROM regions;
-        INSERT INTO regions(id, region, region_url, country, state_data, lat, longitude)
-        VALUES (v_region_id, rec.region, rec.region_url, rec.country, rec.state_data, rec.lat, rec.longitude);
-    END;
+   FOR rec IN (
+      SELECT * FROM TMP_CRAIGSLIST_VEHICLES
+   ) LOOP
 
-    -- Manufacturer
-    BEGIN
-      SELECT id INTO v_manufacturer_id FROM manufacturers WHERE name = rec.manufacturer;
-    EXCEPTION
-      WHEN NO_DATA_FOUND THEN
-        SELECT NVL(MAX(id), 0) + 1 INTO v_manufacturer_id FROM manufacturers;
-        INSERT INTO manufacturers(id, name) VALUES (v_manufacturer_id, rec.manufacturer);
-    END;
-
-    -- Condition
-    BEGIN
-      SELECT id INTO v_condition_id FROM conditions WHERE name = rec.condition;
-    EXCEPTION
-      WHEN NO_DATA_FOUND THEN
-        SELECT NVL(MAX(id), 0) + 1 INTO v_condition_id FROM conditions;
-        INSERT INTO conditions(id, name) VALUES (v_condition_id, rec.condition);
-    END;
-
-    -- Cylinders
-    BEGIN
-      SELECT id INTO v_cylinders_id FROM cylinders WHERE name = rec.cylinders;
-    EXCEPTION
-      WHEN NO_DATA_FOUND THEN
-        SELECT NVL(MAX(id), 0) + 1 INTO v_cylinders_id FROM cylinders;
-        INSERT INTO cylinders(id, name) VALUES (v_cylinders_id, rec.cylinders);
-    END;
-
-    -- Fuel
-    BEGIN
-      SELECT id INTO v_fuel_id FROM fuels WHERE name = rec.fuel;
-    EXCEPTION
-      WHEN NO_DATA_FOUND THEN
-        SELECT NVL(MAX(id), 0) + 1 INTO v_fuel_id FROM fuels;
-        INSERT INTO fuels(id, name) VALUES (v_fuel_id, rec.fuel);
-    END;
-
-    -- Title status
-    BEGIN
-      SELECT id INTO v_title_status_id FROM title_statuses WHERE name = rec.title_status;
-    EXCEPTION
-      WHEN NO_DATA_FOUND THEN
-        SELECT NVL(MAX(id), 0) + 1 INTO v_title_status_id FROM title_statuses;
-        INSERT INTO title_statuses(id, name) VALUES (v_title_status_id, rec.title_status);
-    END;
-
-    -- Transmission
-    BEGIN
-      SELECT id INTO v_transmission_id FROM transmissions WHERE name = rec.transmission;
-    EXCEPTION
-      WHEN NO_DATA_FOUND THEN
-        SELECT NVL(MAX(id), 0) + 1 INTO v_transmission_id FROM transmissions;
-        INSERT INTO transmissions(id, name) VALUES (v_transmission_id, rec.transmission);
-    END;
-
-    -- Drive
-    BEGIN
-      SELECT id INTO v_drive_id FROM drives WHERE name = rec.drive;
-    EXCEPTION
-      WHEN NO_DATA_FOUND THEN
-        SELECT NVL(MAX(id), 0) + 1 INTO v_drive_id FROM drives;
-        INSERT INTO drives(id, name) VALUES (v_drive_id, rec.drive);
-    END;
-
-    -- Size
-    BEGIN
-      SELECT id INTO v_size_id FROM sizes WHERE name = rec.size_data;
-    EXCEPTION
-      WHEN NO_DATA_FOUND THEN
-        SELECT NVL(MAX(id), 0) + 1 INTO v_size_id FROM sizes;
-        INSERT INTO sizes(id, name) VALUES (v_size_id, rec.size_data);
-    END;
-
-    -- Type
-    BEGIN
-      SELECT id INTO v_type_id FROM types WHERE name = rec.type_data;
-    EXCEPTION
-      WHEN NO_DATA_FOUND THEN
-        SELECT NVL(MAX(id), 0) + 1 INTO v_type_id FROM types;
-        INSERT INTO types(id, name) VALUES (v_type_id, rec.type_data);
-    END;
-
-    -- Paint color
-    BEGIN
-      SELECT id INTO v_paint_color_id FROM paint_colors WHERE name = rec.paint_color;
-    EXCEPTION
-      WHEN NO_DATA_FOUND THEN
-        SELECT NVL(MAX(id), 0) + 1 INTO v_paint_color_id FROM paint_colors;
-        INSERT INTO paint_colors(id, name) VALUES (v_paint_color_id, rec.paint_color);
-    END;
-
-    -- Verificar duplicado en vehicles
-    BEGIN
-      IF rec.odometer IS NOT NULL AND rec.odometer >= 0 THEN
-        INSERT INTO vehicles (
-          id, url, region_id, price, year, manufacturer_id, model,
-          condition_id, cylinders_id, fuel_id, odometer,
-          title_status_id, transmission_id, vin, drive_id,
-          size_id, type_id, paint_color_id, image_url,
-          description_data, posting_date
-        ) VALUES (
-          rec.id, rec.url, v_region_id, rec.price, rec.year_data, v_manufacturer_id, rec.model,
-          v_condition_id, v_cylinders_id, v_fuel_id, rec.odometer,
-          v_title_status_id, v_transmission_id, rec.vin, v_drive_id,
-          v_size_id, v_type_id, v_paint_color_id, rec.image_url,
-          rec.description_data,
-          TO_TIMESTAMP_TZ(rec.posting_date, 'YYYY-MM-DD"T"HH24:MI:SSTZH:TZM')
-        );
+      -- Región
+      IF rec.region IS NOT NULL AND TRIM(rec.region) IS NOT NULL THEN
+         BEGIN
+            SELECT id INTO v_region_id FROM REGIONS
+             WHERE REGION = rec.REGION AND REGION_URL = rec.REGION_URL
+               AND COUNTRY = rec.COUNTRY AND STATE_DATA = rec.STATE_DATA
+               AND LAT = rec.LAT AND LONGITUDE = rec.LONGITUDE;
+         EXCEPTION
+            WHEN NO_DATA_FOUND THEN
+               INSERT INTO REGIONS (REGION, REGION_URL, COUNTRY, STATE_DATA, LAT, LONGITUDE)
+               VALUES (rec.REGION, rec.REGION_URL, rec.COUNTRY, rec.STATE_DATA, rec.LAT, rec.LONGITUDE)
+               RETURNING ID INTO v_region_id;
+         END;
+      ELSE
+         CONTINUE;
       END IF;
-    EXCEPTION
-      WHEN DUP_VAL_ON_INDEX THEN
-        NULL; -- Ya existe ese ID, lo ignoramos
-    END;
 
-  END LOOP;
-  COMMIT;
+      -- Manufacturer
+      IF rec.manufacturer IS NOT NULL AND TRIM(rec.manufacturer) IS NOT NULL THEN
+         BEGIN
+            SELECT id INTO v_manufacturer_id FROM MANUFACTURERS WHERE NAME = rec.manufacturer;
+         EXCEPTION
+            WHEN NO_DATA_FOUND THEN
+               INSERT INTO MANUFACTURERS (NAME)
+               VALUES (rec.manufacturer)
+               RETURNING ID INTO v_manufacturer_id;
+         END;
+      ELSE
+         CONTINUE;
+      END IF;
+
+      -- Condition
+      IF rec.condition IS NOT NULL AND TRIM(rec.condition) IS NOT NULL THEN
+         BEGIN
+            SELECT id INTO v_condition_id FROM CONDITIONS WHERE NAME = rec.condition;
+         EXCEPTION
+            WHEN NO_DATA_FOUND THEN
+               INSERT INTO CONDITIONS (NAME)
+               VALUES (rec.condition)
+               RETURNING ID INTO v_condition_id;
+         END;
+      ELSE
+         v_condition_id := NULL;
+      END IF;
+
+      -- Cylinders
+      IF rec.cylinders IS NOT NULL AND TRIM(rec.cylinders) IS NOT NULL THEN
+         BEGIN
+            SELECT id INTO v_cylinders_id FROM CYLINDERS WHERE NAME = rec.cylinders;
+         EXCEPTION
+            WHEN NO_DATA_FOUND THEN
+               INSERT INTO CYLINDERS (NAME)
+               VALUES (rec.cylinders)
+               RETURNING ID INTO v_cylinders_id;
+         END;
+      ELSE
+         v_cylinders_id := NULL;
+      END IF;
+
+      -- Fuel
+      IF rec.fuel IS NOT NULL AND TRIM(rec.fuel) IS NOT NULL THEN
+         BEGIN
+            SELECT id INTO v_fuel_id FROM FUELS WHERE NAME = rec.fuel;
+         EXCEPTION
+            WHEN NO_DATA_FOUND THEN
+               INSERT INTO FUELS (NAME)
+               VALUES (rec.fuel)
+               RETURNING ID INTO v_fuel_id;
+         END;
+      ELSE
+         v_fuel_id := NULL;
+      END IF;
+
+      -- Title status
+      IF rec.title_status IS NOT NULL AND TRIM(rec.title_status) IS NOT NULL THEN
+         BEGIN
+            SELECT id INTO v_title_status_id FROM TITLE_STATUSES WHERE NAME = rec.title_status;
+         EXCEPTION
+            WHEN NO_DATA_FOUND THEN
+               INSERT INTO TITLE_STATUSES (NAME)
+               VALUES (rec.title_status)
+               RETURNING ID INTO v_title_status_id;
+         END;
+      ELSE
+         v_title_status_id := NULL;
+      END IF;
+
+      -- Transmission
+      IF rec.transmission IS NOT NULL AND TRIM(rec.transmission) IS NOT NULL THEN
+         BEGIN
+            SELECT id INTO v_transmission_id FROM TRANSMISSIONS WHERE NAME = rec.transmission;
+         EXCEPTION
+            WHEN NO_DATA_FOUND THEN
+               INSERT INTO TRANSMISSIONS (NAME)
+               VALUES (rec.transmission)
+               RETURNING ID INTO v_transmission_id;
+         END;
+      ELSE
+         v_transmission_id := NULL;
+      END IF;
+
+      -- Drive
+      IF rec.drive IS NOT NULL AND TRIM(rec.drive) IS NOT NULL THEN
+         BEGIN
+            SELECT id INTO v_drive_id FROM DRIVES WHERE NAME = rec.drive;
+         EXCEPTION
+            WHEN NO_DATA_FOUND THEN
+               INSERT INTO DRIVES (NAME)
+               VALUES (rec.drive)
+               RETURNING ID INTO v_drive_id;
+         END;
+      ELSE
+         v_drive_id := NULL;
+      END IF;
+
+      -- Size
+      IF rec.size_data IS NOT NULL AND TRIM(rec.size_data) IS NOT NULL THEN
+         BEGIN
+            SELECT id INTO v_size_id FROM SIZES WHERE NAME = rec.size_data;
+         EXCEPTION
+            WHEN NO_DATA_FOUND THEN
+               INSERT INTO SIZES (NAME)
+               VALUES (rec.size_data)
+               RETURNING ID INTO v_size_id;
+         END;
+      ELSE
+         v_size_id := NULL;
+      END IF;
+
+      -- Type
+      IF rec.type_data IS NOT NULL AND TRIM(rec.type_data) IS NOT NULL THEN
+         BEGIN
+            SELECT id INTO v_type_id FROM TYPES WHERE NAME = rec.type_data;
+         EXCEPTION
+            WHEN NO_DATA_FOUND THEN
+               INSERT INTO TYPES (NAME)
+               VALUES (rec.type_data)
+               RETURNING ID INTO v_type_id;
+         END;
+      ELSE
+         v_type_id := NULL;
+      END IF;
+
+      -- Paint color
+      IF rec.paint_color IS NOT NULL AND TRIM(rec.paint_color) IS NOT NULL THEN
+         BEGIN
+            SELECT id INTO v_paint_color_id FROM PAINT_COLORS WHERE NAME = rec.paint_color;
+         EXCEPTION
+            WHEN NO_DATA_FOUND THEN
+               INSERT INTO PAINT_COLORS (NAME)
+               VALUES (rec.paint_color)
+               RETURNING ID INTO v_paint_color_id;
+         END;
+      ELSE
+         v_paint_color_id := NULL;
+      END IF;
+
+      -- Insertar vehículo
+      BEGIN
+         IF rec.odometer IS NOT NULL AND rec.odometer >= 0 THEN
+            INSERT INTO VEHICLES (
+               URL, REGION_ID, PRICE, YEAR, MANUFACTURER_ID, MODEL,
+               CONDITION_ID, CYLINDERS_ID, FUEL_ID, ODOMETER,
+               TITLE_STATUS_ID, TRANSMISSION_ID, VIN, DRIVE_ID,
+               SIZE_ID, TYPE_ID, PAINT_COLOR_ID, IMAGE_URL,
+               DESCRIPTION_DATA, POSTING_DATE
+            ) VALUES (
+               rec.url, v_region_id, rec.price, rec.year_data, v_manufacturer_id, rec.model,
+               v_condition_id, v_cylinders_id, v_fuel_id, rec.odometer,
+               v_title_status_id, v_transmission_id, rec.vin, v_drive_id,
+               v_size_id, v_type_id, v_paint_color_id, rec.image_url,
+               rec.description_data,
+               TO_TIMESTAMP_TZ(rec.posting_date, 'YYYY-MM-DD"T"HH24:MI:SSTZH:TZM')
+            );
+         END IF;
+      EXCEPTION
+         WHEN DUP_VAL_ON_INDEX THEN NULL;
+         WHEN OTHERS THEN NULL;
+      END;
+
+   END LOOP;
+   COMMIT;
 END;
 /
 
 
-SELECT * FROM tmp_craigslist_vehicles;
-SELECT * FROM vehicles;
-SELECT * FROM title_statuses;
-SELECT * FROM transmissions;
-SELECT * FROM regions;
 
-SELECT * FROM paint_colors;
+SELECT *
+  FROM TMP_CRAIGSLIST_VEHICLES;
+SELECT *
+  FROM VEHICLES;
+SELECT *
+  FROM TITLE_STATUSES;
+SELECT *
+  FROM TRANSMISSIONS;
+SELECT *
+  FROM REGIONS;
+
+SELECT *
+  FROM PAINT_COLORS;
 
 
 
@@ -358,10 +471,56 @@ SELECT * FROM paint_colors;
 
 
 
-SELECT trigger_name, status
-FROM user_triggers
-WHERE trigger_name = 'TRG_CHECK_VEHICLE_YEAR';
+SELECT TRIGGER_NAME,
+       STATUS
+  FROM USER_TRIGGERS
+ WHERE TRIGGER_NAME = 'TRG_CHECK_VEHICLE_YEAR';
 
 SHOW ERRORS TRIGGER TRG_CHECK_VEHICLE_YEAR;
 
-ALTER TRIGGER trg_check_vehicle_year DISABLE;
+ALTER TRIGGER TRG_CHECK_VEHICLE_YEAR DISABLE;
+
+
+
+-- Primero borra los datos de la tabla dependiente
+DELETE FROM VEHICLES;
+
+-- Luego borra datos de tablas referenciadas
+DELETE FROM REGIONS;
+DELETE FROM MANUFACTURERS;
+DELETE FROM CONDITIONS;
+DELETE FROM CYLINDERS;
+DELETE FROM FUELS;
+DELETE FROM TITLE_STATUSES;
+DELETE FROM TRANSMISSIONS;
+DELETE FROM DRIVES;
+DELETE FROM SIZES;
+DELETE FROM TYPES;
+DELETE FROM PAINT_COLORS;
+
+
+TRUNCATE TABLE VEHICLES;
+TRUNCATE TABLE REGIONS;
+TRUNCATE TABLE MANUFACTURERS;
+TRUNCATE TABLE CONDITIONS;
+TRUNCATE TABLE CYLINDERS;
+TRUNCATE TABLE FUELS;
+TRUNCATE TABLE TITLE_STATUSES;
+TRUNCATE TABLE TRANSMISSIONS;
+TRUNCATE TABLE DRIVES;
+TRUNCATE TABLE SIZES;
+TRUNCATE TABLE TYPES;
+TRUNCATE TABLE PAINT_COLORS;
+
+DROP TABLE VEHICLES;
+DROP TABLE REGIONS;
+DROP TABLE MANUFACTURERS;
+DROP TABLE CONDITIONS;
+DROP TABLE CYLINDERS;
+DROP TABLE FUELS;
+DROP TABLE TITLE_STATUSES;
+DROP TABLE TRANSMISSIONS;
+DROP TABLE DRIVES;
+DROP TABLE SIZES;
+DROP TABLE TYPES;
+DROP TABLE PAINT_COLORS;
