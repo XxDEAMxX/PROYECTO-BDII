@@ -236,8 +236,211 @@ ALTER TABLE PAINT_COLORS ADD CONSTRAINT UQ_PAINT_COLOR_NAME UNIQUE ( NAME );
 -- ALTER TABLE vehicles ADD CONSTRAINT chk_year_valid CHECK (year BETWEEN 1900 AND EXTRACT(YEAR FROM SYSDATE));
 ALTER TABLE VEHICLES ADD CONSTRAINT CHK_ODOMETER_POSITIVE CHECK ( ODOMETER >= 0 );
 
--- Bloque anónimo corregido con validaciones y uso de secuencias automáticas
-DECLARE
+-- Cargar REGIONS
+CREATE OR REPLACE PROCEDURE LOAD_REGIONS AS
+   v_id NUMBER;
+BEGIN
+   FOR rec IN (
+      SELECT DISTINCT REGION, REGION_URL, COUNTRY, STATE_DATA, LAT, LONGITUDE
+      FROM TMP_CRAIGSLIST_VEHICLES
+      WHERE REGION IS NOT NULL AND TRIM(REGION) IS NOT NULL
+   ) LOOP
+      BEGIN
+         SELECT ID INTO v_id FROM REGIONS
+          WHERE REGION = rec.REGION AND REGION_URL = rec.REGION_URL
+            AND COUNTRY = rec.COUNTRY AND STATE_DATA = rec.STATE_DATA
+            AND LAT = rec.LAT AND LONGITUDE = rec.LONGITUDE;
+      EXCEPTION
+         WHEN NO_DATA_FOUND THEN
+            INSERT INTO REGIONS (REGION, REGION_URL, COUNTRY, STATE_DATA, LAT, LONGITUDE)
+            VALUES (rec.REGION, rec.REGION_URL, rec.COUNTRY, rec.STATE_DATA, rec.LAT, rec.LONGITUDE);
+      END;
+   END LOOP;
+END;
+/
+
+-- Cargar MANUFACTURERS
+CREATE OR REPLACE PROCEDURE LOAD_MANUFACTURERS AS
+   v_id NUMBER;
+BEGIN
+   FOR rec IN (
+      SELECT DISTINCT MANUFACTURER FROM TMP_CRAIGSLIST_VEHICLES
+      WHERE MANUFACTURER IS NOT NULL AND TRIM(MANUFACTURER) IS NOT NULL
+   ) LOOP
+      BEGIN
+         SELECT ID INTO v_id FROM MANUFACTURERS WHERE NAME = rec.MANUFACTURER;
+      EXCEPTION
+         WHEN NO_DATA_FOUND THEN
+            INSERT INTO MANUFACTURERS (NAME) VALUES (rec.MANUFACTURER);
+      END;
+   END LOOP;
+END;
+/
+
+-- Cargar CONDITIONS
+CREATE OR REPLACE PROCEDURE LOAD_CONDITIONS AS
+   v_id NUMBER;
+BEGIN
+   FOR rec IN (
+      SELECT DISTINCT CONDITION FROM TMP_CRAIGSLIST_VEHICLES
+      WHERE CONDITION IS NOT NULL AND TRIM(CONDITION) IS NOT NULL
+   ) LOOP
+      BEGIN
+         SELECT ID INTO v_id FROM CONDITIONS WHERE NAME = rec.CONDITION;
+      EXCEPTION
+         WHEN NO_DATA_FOUND THEN
+            INSERT INTO CONDITIONS (NAME) VALUES (rec.CONDITION);
+      END;
+   END LOOP;
+END;
+/
+
+-- Cargar CYLINDERS
+CREATE OR REPLACE PROCEDURE LOAD_CYLINDERS AS
+   v_id NUMBER;
+BEGIN
+   FOR rec IN (
+      SELECT DISTINCT CYLINDERS FROM TMP_CRAIGSLIST_VEHICLES
+      WHERE CYLINDERS IS NOT NULL AND TRIM(CYLINDERS) IS NOT NULL
+   ) LOOP
+      BEGIN
+         SELECT ID INTO v_id FROM CYLINDERS WHERE NAME = rec.CYLINDERS;
+      EXCEPTION
+         WHEN NO_DATA_FOUND THEN
+            INSERT INTO CYLINDERS (NAME) VALUES (rec.CYLINDERS);
+      END;
+   END LOOP;
+END;
+/
+
+-- Cargar FUELS
+CREATE OR REPLACE PROCEDURE LOAD_FUELS AS
+   v_id NUMBER;
+BEGIN
+   FOR rec IN (
+      SELECT DISTINCT FUEL FROM TMP_CRAIGSLIST_VEHICLES
+      WHERE FUEL IS NOT NULL AND TRIM(FUEL) IS NOT NULL
+   ) LOOP
+      BEGIN
+         SELECT ID INTO v_id FROM FUELS WHERE NAME = rec.FUEL;
+      EXCEPTION
+         WHEN NO_DATA_FOUND THEN
+            INSERT INTO FUELS (NAME) VALUES (rec.FUEL);
+      END;
+   END LOOP;
+END;
+/
+
+-- Cargar TITLE_STATUSES
+CREATE OR REPLACE PROCEDURE LOAD_TITLE_STATUSES AS
+   v_id NUMBER;
+BEGIN
+   FOR rec IN (
+      SELECT DISTINCT TITLE_STATUS FROM TMP_CRAIGSLIST_VEHICLES
+      WHERE TITLE_STATUS IS NOT NULL AND TRIM(TITLE_STATUS) IS NOT NULL
+   ) LOOP
+      BEGIN
+         SELECT ID INTO v_id FROM TITLE_STATUSES WHERE NAME = rec.TITLE_STATUS;
+      EXCEPTION
+         WHEN NO_DATA_FOUND THEN
+            INSERT INTO TITLE_STATUSES (NAME) VALUES (rec.TITLE_STATUS);
+      END;
+   END LOOP;
+END;
+/
+
+-- Cargar TRANSMISSIONS
+CREATE OR REPLACE PROCEDURE LOAD_TRANSMISSIONS AS
+   v_id NUMBER;
+BEGIN
+   FOR rec IN (
+      SELECT DISTINCT TRANSMISSION FROM TMP_CRAIGSLIST_VEHICLES
+      WHERE TRANSMISSION IS NOT NULL AND TRIM(TRANSMISSION) IS NOT NULL
+   ) LOOP
+      BEGIN
+         SELECT ID INTO v_id FROM TRANSMISSIONS WHERE NAME = rec.TRANSMISSION;
+      EXCEPTION
+         WHEN NO_DATA_FOUND THEN
+            INSERT INTO TRANSMISSIONS (NAME) VALUES (rec.TRANSMISSION);
+      END;
+   END LOOP;
+END;
+/
+
+-- Cargar DRIVES
+CREATE OR REPLACE PROCEDURE LOAD_DRIVES AS
+   v_id NUMBER;
+BEGIN
+   FOR rec IN (
+      SELECT DISTINCT DRIVE FROM TMP_CRAIGSLIST_VEHICLES
+      WHERE DRIVE IS NOT NULL AND TRIM(DRIVE) IS NOT NULL
+   ) LOOP
+      BEGIN
+         SELECT ID INTO v_id FROM DRIVES WHERE NAME = rec.DRIVE;
+      EXCEPTION
+         WHEN NO_DATA_FOUND THEN
+            INSERT INTO DRIVES (NAME) VALUES (rec.DRIVE);
+      END;
+   END LOOP;
+END;
+/
+
+-- Cargar SIZES
+CREATE OR REPLACE PROCEDURE LOAD_SIZES AS
+   v_id NUMBER;
+BEGIN
+   FOR rec IN (
+      SELECT DISTINCT SIZE_DATA FROM TMP_CRAIGSLIST_VEHICLES
+      WHERE SIZE_DATA IS NOT NULL AND TRIM(SIZE_DATA) IS NOT NULL
+   ) LOOP
+      BEGIN
+         SELECT ID INTO v_id FROM SIZES WHERE NAME = rec.SIZE_DATA;
+      EXCEPTION
+         WHEN NO_DATA_FOUND THEN
+            INSERT INTO SIZES (NAME) VALUES (rec.SIZE_DATA);
+      END;
+   END LOOP;
+END;
+/
+
+-- Cargar TYPES
+CREATE OR REPLACE PROCEDURE LOAD_TYPES AS
+   v_id NUMBER;
+BEGIN
+   FOR rec IN (
+      SELECT DISTINCT TYPE_DATA FROM TMP_CRAIGSLIST_VEHICLES
+      WHERE TYPE_DATA IS NOT NULL AND TRIM(TYPE_DATA) IS NOT NULL
+   ) LOOP
+      BEGIN
+         SELECT ID INTO v_id FROM TYPES WHERE NAME = rec.TYPE_DATA;
+      EXCEPTION
+         WHEN NO_DATA_FOUND THEN
+            INSERT INTO TYPES (NAME) VALUES (rec.TYPE_DATA);
+      END;
+   END LOOP;
+END;
+/
+
+-- Cargar PAINT_COLORS
+CREATE OR REPLACE PROCEDURE LOAD_PAINT_COLORS AS
+   v_id NUMBER;
+BEGIN
+   FOR rec IN (
+      SELECT DISTINCT PAINT_COLOR FROM TMP_CRAIGSLIST_VEHICLES
+      WHERE PAINT_COLOR IS NOT NULL AND TRIM(PAINT_COLOR) IS NOT NULL
+   ) LOOP
+      BEGIN
+         SELECT ID INTO v_id FROM PAINT_COLORS WHERE NAME = rec.PAINT_COLOR;
+      EXCEPTION
+         WHEN NO_DATA_FOUND THEN
+            INSERT INTO PAINT_COLORS (NAME) VALUES (rec.PAINT_COLOR);
+      END;
+   END LOOP;
+END;
+/
+
+-- Cargar VEHICLES (requiere que las tablas referenciales ya estén cargadas)
+CREATE OR REPLACE PROCEDURE LOAD_VEHICLES AS
    v_region_id       NUMBER;
    v_manufacturer_id NUMBER;
    v_condition_id    NUMBER;
@@ -250,195 +453,68 @@ DECLARE
    v_type_id         NUMBER;
    v_paint_color_id  NUMBER;
 BEGIN
-   FOR rec IN (
-      SELECT * FROM TMP_CRAIGSLIST_VEHICLES
-   ) LOOP
+   FOR rec IN (SELECT * FROM TMP_CRAIGSLIST_VEHICLES) LOOP
+      -- Obtener IDs referenciales
+      BEGIN
+         SELECT ID INTO v_region_id FROM REGIONS
+            WHERE REGION = rec.REGION AND REGION_URL = rec.REGION_URL
+              AND COUNTRY = rec.COUNTRY AND STATE_DATA = rec.STATE_DATA
+              AND LAT = rec.LAT AND LONGITUDE = rec.LONGITUDE;
+      EXCEPTION WHEN NO_DATA_FOUND THEN v_region_id := NULL; END;
 
-      -- Región
-      IF rec.region IS NOT NULL AND TRIM(rec.region) IS NOT NULL THEN
-         BEGIN
-            SELECT id INTO v_region_id FROM REGIONS
-             WHERE REGION = rec.REGION AND REGION_URL = rec.REGION_URL
-               AND COUNTRY = rec.COUNTRY AND STATE_DATA = rec.STATE_DATA
-               AND LAT = rec.LAT AND LONGITUDE = rec.LONGITUDE;
-         EXCEPTION
-            WHEN NO_DATA_FOUND THEN
-               INSERT INTO REGIONS (REGION, REGION_URL, COUNTRY, STATE_DATA, LAT, LONGITUDE)
-               VALUES (rec.REGION, rec.REGION_URL, rec.COUNTRY, rec.STATE_DATA, rec.LAT, rec.LONGITUDE)
-               RETURNING ID INTO v_region_id;
-         END;
-      ELSE
-         CONTINUE;
-      END IF;
+      BEGIN SELECT ID INTO v_manufacturer_id FROM MANUFACTURERS WHERE NAME = rec.MANUFACTURER;
+      EXCEPTION WHEN NO_DATA_FOUND THEN v_manufacturer_id := NULL; END;
 
-      -- Manufacturer
-      IF rec.manufacturer IS NOT NULL AND TRIM(rec.manufacturer) IS NOT NULL THEN
-         BEGIN
-            SELECT id INTO v_manufacturer_id FROM MANUFACTURERS WHERE NAME = rec.manufacturer;
-         EXCEPTION
-            WHEN NO_DATA_FOUND THEN
-               INSERT INTO MANUFACTURERS (NAME)
-               VALUES (rec.manufacturer)
-               RETURNING ID INTO v_manufacturer_id;
-         END;
-      ELSE
-         CONTINUE;
-      END IF;
+      BEGIN SELECT ID INTO v_condition_id FROM CONDITIONS WHERE NAME = rec.CONDITION;
+      EXCEPTION WHEN NO_DATA_FOUND THEN v_condition_id := NULL; END;
 
-      -- Condition
-      IF rec.condition IS NOT NULL AND TRIM(rec.condition) IS NOT NULL THEN
-         BEGIN
-            SELECT id INTO v_condition_id FROM CONDITIONS WHERE NAME = rec.condition;
-         EXCEPTION
-            WHEN NO_DATA_FOUND THEN
-               INSERT INTO CONDITIONS (NAME)
-               VALUES (rec.condition)
-               RETURNING ID INTO v_condition_id;
-         END;
-      ELSE
-         v_condition_id := NULL;
-      END IF;
+      BEGIN SELECT ID INTO v_cylinders_id FROM CYLINDERS WHERE NAME = rec.CYLINDERS;
+      EXCEPTION WHEN NO_DATA_FOUND THEN v_cylinders_id := NULL; END;
 
-      -- Cylinders
-      IF rec.cylinders IS NOT NULL AND TRIM(rec.cylinders) IS NOT NULL THEN
-         BEGIN
-            SELECT id INTO v_cylinders_id FROM CYLINDERS WHERE NAME = rec.cylinders;
-         EXCEPTION
-            WHEN NO_DATA_FOUND THEN
-               INSERT INTO CYLINDERS (NAME)
-               VALUES (rec.cylinders)
-               RETURNING ID INTO v_cylinders_id;
-         END;
-      ELSE
-         v_cylinders_id := NULL;
-      END IF;
+      BEGIN SELECT ID INTO v_fuel_id FROM FUELS WHERE NAME = rec.FUEL;
+      EXCEPTION WHEN NO_DATA_FOUND THEN v_fuel_id := NULL; END;
 
-      -- Fuel
-      IF rec.fuel IS NOT NULL AND TRIM(rec.fuel) IS NOT NULL THEN
-         BEGIN
-            SELECT id INTO v_fuel_id FROM FUELS WHERE NAME = rec.fuel;
-         EXCEPTION
-            WHEN NO_DATA_FOUND THEN
-               INSERT INTO FUELS (NAME)
-               VALUES (rec.fuel)
-               RETURNING ID INTO v_fuel_id;
-         END;
-      ELSE
-         v_fuel_id := NULL;
-      END IF;
+      BEGIN SELECT ID INTO v_title_status_id FROM TITLE_STATUSES WHERE NAME = rec.TITLE_STATUS;
+      EXCEPTION WHEN NO_DATA_FOUND THEN v_title_status_id := NULL; END;
 
-      -- Title status
-      IF rec.title_status IS NOT NULL AND TRIM(rec.title_status) IS NOT NULL THEN
-         BEGIN
-            SELECT id INTO v_title_status_id FROM TITLE_STATUSES WHERE NAME = rec.title_status;
-         EXCEPTION
-            WHEN NO_DATA_FOUND THEN
-               INSERT INTO TITLE_STATUSES (NAME)
-               VALUES (rec.title_status)
-               RETURNING ID INTO v_title_status_id;
-         END;
-      ELSE
-         v_title_status_id := NULL;
-      END IF;
+      BEGIN SELECT ID INTO v_transmission_id FROM TRANSMISSIONS WHERE NAME = rec.TRANSMISSION;
+      EXCEPTION WHEN NO_DATA_FOUND THEN v_transmission_id := NULL; END;
 
-      -- Transmission
-      IF rec.transmission IS NOT NULL AND TRIM(rec.transmission) IS NOT NULL THEN
-         BEGIN
-            SELECT id INTO v_transmission_id FROM TRANSMISSIONS WHERE NAME = rec.transmission;
-         EXCEPTION
-            WHEN NO_DATA_FOUND THEN
-               INSERT INTO TRANSMISSIONS (NAME)
-               VALUES (rec.transmission)
-               RETURNING ID INTO v_transmission_id;
-         END;
-      ELSE
-         v_transmission_id := NULL;
-      END IF;
+      BEGIN SELECT ID INTO v_drive_id FROM DRIVES WHERE NAME = rec.DRIVE;
+      EXCEPTION WHEN NO_DATA_FOUND THEN v_drive_id := NULL; END;
 
-      -- Drive
-      IF rec.drive IS NOT NULL AND TRIM(rec.drive) IS NOT NULL THEN
-         BEGIN
-            SELECT id INTO v_drive_id FROM DRIVES WHERE NAME = rec.drive;
-         EXCEPTION
-            WHEN NO_DATA_FOUND THEN
-               INSERT INTO DRIVES (NAME)
-               VALUES (rec.drive)
-               RETURNING ID INTO v_drive_id;
-         END;
-      ELSE
-         v_drive_id := NULL;
-      END IF;
+      BEGIN SELECT ID INTO v_size_id FROM SIZES WHERE NAME = rec.SIZE_DATA;
+      EXCEPTION WHEN NO_DATA_FOUND THEN v_size_id := NULL; END;
 
-      -- Size
-      IF rec.size_data IS NOT NULL AND TRIM(rec.size_data) IS NOT NULL THEN
-         BEGIN
-            SELECT id INTO v_size_id FROM SIZES WHERE NAME = rec.size_data;
-         EXCEPTION
-            WHEN NO_DATA_FOUND THEN
-               INSERT INTO SIZES (NAME)
-               VALUES (rec.size_data)
-               RETURNING ID INTO v_size_id;
-         END;
-      ELSE
-         v_size_id := NULL;
-      END IF;
+      BEGIN SELECT ID INTO v_type_id FROM TYPES WHERE NAME = rec.TYPE_DATA;
+      EXCEPTION WHEN NO_DATA_FOUND THEN v_type_id := NULL; END;
 
-      -- Type
-      IF rec.type_data IS NOT NULL AND TRIM(rec.type_data) IS NOT NULL THEN
-         BEGIN
-            SELECT id INTO v_type_id FROM TYPES WHERE NAME = rec.type_data;
-         EXCEPTION
-            WHEN NO_DATA_FOUND THEN
-               INSERT INTO TYPES (NAME)
-               VALUES (rec.type_data)
-               RETURNING ID INTO v_type_id;
-         END;
-      ELSE
-         v_type_id := NULL;
-      END IF;
-
-      -- Paint color
-      IF rec.paint_color IS NOT NULL AND TRIM(rec.paint_color) IS NOT NULL THEN
-         BEGIN
-            SELECT id INTO v_paint_color_id FROM PAINT_COLORS WHERE NAME = rec.paint_color;
-         EXCEPTION
-            WHEN NO_DATA_FOUND THEN
-               INSERT INTO PAINT_COLORS (NAME)
-               VALUES (rec.paint_color)
-               RETURNING ID INTO v_paint_color_id;
-         END;
-      ELSE
-         v_paint_color_id := NULL;
-      END IF;
+      BEGIN SELECT ID INTO v_paint_color_id FROM PAINT_COLORS WHERE NAME = rec.PAINT_COLOR;
+      EXCEPTION WHEN NO_DATA_FOUND THEN v_paint_color_id := NULL; END;
 
       -- Insertar vehículo
       BEGIN
-         IF rec.odometer IS NOT NULL AND rec.odometer >= 0 THEN
-            INSERT INTO VEHICLES (
-               URL, REGION_ID, PRICE, YEAR, MANUFACTURER_ID, MODEL,
-               CONDITION_ID, CYLINDERS_ID, FUEL_ID, ODOMETER,
-               TITLE_STATUS_ID, TRANSMISSION_ID, VIN, DRIVE_ID,
-               SIZE_ID, TYPE_ID, PAINT_COLOR_ID, IMAGE_URL,
-               DESCRIPTION_DATA, POSTING_DATE
-            ) VALUES (
-               rec.url, v_region_id, rec.price, rec.year_data, v_manufacturer_id, rec.model,
-               v_condition_id, v_cylinders_id, v_fuel_id, rec.odometer,
-               v_title_status_id, v_transmission_id, rec.vin, v_drive_id,
-               v_size_id, v_type_id, v_paint_color_id, rec.image_url,
-               rec.description_data,
-               TO_TIMESTAMP_TZ(rec.posting_date, 'YYYY-MM-DD"T"HH24:MI:SSTZH:TZM')
-            );
-         END IF;
+         INSERT INTO VEHICLES (
+            URL, REGION_ID, PRICE, YEAR, MANUFACTURER_ID, MODEL,
+            CONDITION_ID, CYLINDERS_ID, FUEL_ID, ODOMETER,
+            TITLE_STATUS_ID, TRANSMISSION_ID, VIN, DRIVE_ID,
+            SIZE_ID, TYPE_ID, PAINT_COLOR_ID, IMAGE_URL,
+            DESCRIPTION_DATA, POSTING_DATE
+         )
+         VALUES (
+            rec.URL, v_region_id, rec.PRICE, rec.YEAR_DATA, v_manufacturer_id, rec.MODEL,
+            v_condition_id, v_cylinders_id, v_fuel_id, rec.ODOMETER,
+            v_title_status_id, v_transmission_id, rec.VIN, v_drive_id,
+            v_size_id, v_type_id, v_paint_color_id, rec.IMAGE_URL,
+            rec.DESCRIPTION_DATA, TO_DATE(rec.POSTING_DATE, 'YYYY-MM-DD')
+         );
       EXCEPTION
          WHEN DUP_VAL_ON_INDEX THEN NULL;
          WHEN OTHERS THEN NULL;
       END;
-
    END LOOP;
-   COMMIT;
 END;
 /
-
 
 
 SELECT *
@@ -459,7 +535,7 @@ SELECT *
 
 
 
--- DROP TABLE tmp_craigslist_vehicles PURGE;
+DROP TABLE tmp_craigslist_vehicles PURGE;
 
 -- SELECT COUNT(1) FROM tmp_craigslist_vehicles;
 
@@ -470,57 +546,48 @@ SELECT *
 -- SELECT * FROM nls_database_parameters WHERE parameter = 'NLS_CHARACTERSET';
 
 
+-- drop user cars_user cascade;
 
-SELECT TRIGGER_NAME,
-       STATUS
-  FROM USER_TRIGGERS
- WHERE TRIGGER_NAME = 'TRG_CHECK_VEHICLE_YEAR';
+-- -- Primero borra los datos de la tabla dependiente
+-- DELETE FROM VEHICLES;
 
-SHOW ERRORS TRIGGER TRG_CHECK_VEHICLE_YEAR;
-
-ALTER TRIGGER TRG_CHECK_VEHICLE_YEAR DISABLE;
-
-
-
--- Primero borra los datos de la tabla dependiente
-DELETE FROM VEHICLES;
-
--- Luego borra datos de tablas referenciadas
-DELETE FROM REGIONS;
-DELETE FROM MANUFACTURERS;
-DELETE FROM CONDITIONS;
-DELETE FROM CYLINDERS;
-DELETE FROM FUELS;
-DELETE FROM TITLE_STATUSES;
-DELETE FROM TRANSMISSIONS;
-DELETE FROM DRIVES;
-DELETE FROM SIZES;
-DELETE FROM TYPES;
-DELETE FROM PAINT_COLORS;
+-- -- Luego borra datos de tablas referenciadas
+-- DELETE FROM REGIONS;
+-- DELETE FROM MANUFACTURERS;
+-- DELETE FROM CONDITIONS;
+-- DELETE FROM CYLINDERS;
+-- DELETE FROM FUELS;
+-- DELETE FROM TITLE_STATUSES;
+-- DELETE FROM TRANSMISSIONS;
+-- DELETE FROM DRIVES;
+-- DELETE FROM SIZES;
+-- DELETE FROM TYPES;
+-- DELETE FROM PAINT_COLORS;
 
 
-TRUNCATE TABLE VEHICLES;
-TRUNCATE TABLE REGIONS;
-TRUNCATE TABLE MANUFACTURERS;
-TRUNCATE TABLE CONDITIONS;
-TRUNCATE TABLE CYLINDERS;
-TRUNCATE TABLE FUELS;
-TRUNCATE TABLE TITLE_STATUSES;
-TRUNCATE TABLE TRANSMISSIONS;
-TRUNCATE TABLE DRIVES;
-TRUNCATE TABLE SIZES;
-TRUNCATE TABLE TYPES;
-TRUNCATE TABLE PAINT_COLORS;
+-- TRUNCATE TABLE VEHICLES;
+-- TRUNCATE TABLE REGIONS;
+-- TRUNCATE TABLE MANUFACTURERS;
+-- TRUNCATE TABLE CONDITIONS;
+-- TRUNCATE TABLE CYLINDERS;
+-- TRUNCATE TABLE FUELS;
+-- TRUNCATE TABLE TITLE_STATUSES;
+-- TRUNCATE TABLE TRANSMISSIONS;
+-- TRUNCATE TABLE DRIVES;
+-- TRUNCATE TABLE SIZES;
+-- TRUNCATE TABLE TYPES;
+-- TRUNCATE TABLE PAINT_COLORS;
 
-DROP TABLE VEHICLES;
-DROP TABLE REGIONS;
-DROP TABLE MANUFACTURERS;
-DROP TABLE CONDITIONS;
-DROP TABLE CYLINDERS;
-DROP TABLE FUELS;
-DROP TABLE TITLE_STATUSES;
-DROP TABLE TRANSMISSIONS;
-DROP TABLE DRIVES;
-DROP TABLE SIZES;
-DROP TABLE TYPES;
-DROP TABLE PAINT_COLORS;
+-- DROP TABLE VEHICLES;
+-- DROP TABLE REGIONS;
+-- DROP TABLE MANUFACTURERS;
+-- DROP TABLE CONDITIONS;
+-- DROP TABLE CYLINDERS;
+-- DROP TABLE FUELS;
+-- DROP TABLE TITLE_STATUSES;
+-- DROP TABLE TRANSMISSIONS;
+-- DROP TABLE DRIVES;
+-- DROP TABLE SIZES;
+-- DROP TABLE TYPES;
+-- DROP TABLE PAINT_COLORS;
+
