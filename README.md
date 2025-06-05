@@ -2,27 +2,31 @@
 
 ## Descripción del Proyecto
 
-Sistema completo de base de datos Oracle para la gestión de datos de vehículos de Craigslist, implementando un modelo de datos normalizado, procesos ETL, y un sistema integral de control de auditoría.
+Sistema completo de base de datos Oracle para la gestión de datos de vehículos de Craigslist, implementando un modelo de datos normalizado, procesos ETL, sistema integral de control de auditoría, **validación de fechas laborales**, **reportes estadísticos** y **paquetes PL/SQL** para organizar la lógica de negocio.
 
 **Autores:** Daniel Arevalo - Alex Hernandez  
 **Fecha:** Junio 2025  
 **Base de Datos:** Oracle Database  
+**Estado:** ✅ **PROYECTO COMPLETADO AL 100%**
 
 ## 🏗️ Arquitectura del Sistema
 
 ### Modelo de Datos Normalizado
 - **Tablas principales:** VEHICLES, MANUFACTURERS, REGIONS
-- **Tablas de catálogo:** FUEL_TYPES, TRANSMISSIONS, DRIVE_TYPES, VEHICLE_CLASSES
+- **Tablas de catálogo:** CONDITIONS, FUELS, TRANSMISSIONS, CYLINDERS, DRIVES, SIZES, TYPES, PAINT_COLORS, TITLE_STATUSES
+- **Tabla de reportes:** VEHICLE_REPORTS (NUEVA)
 - **Normalización 3NF** con separación de entidades y relaciones optimizadas
 - **Sistema de auditoría:** AUDIT_CONTROL con triggers automáticos
 
 ### Características Principales
 - ✅ **Control de auditoría automático** - Registro de todas las operaciones DML
+- ✅ **Validación de fechas laborales** - Función VALIDATE_LOAD_DATE (NUEVO)
+- ✅ **Sistema de reportes estadísticos** - Con rango de fechas (NUEVO)
+- ✅ **Paquetes PL/SQL** - Organización de lógica de negocio (NUEVO)
 - ✅ **Procesos ETL** - Carga de datos desde CSV con validación
 - ✅ **Integridad referencial** - Restricciones y constraints completos
 - ✅ **Optimización** - Índices estratégicos para mejor rendimiento
 - ✅ **Vistas de negocio** - Consultas predefinidas para análisis
-- ✅ **Procedimientos almacenados** - Lógica de negocio encapsulada
 
 ## 📁 Estructura de Archivos
 
@@ -33,17 +37,23 @@ Sistema completo de base de datos Oracle para la gestión de datos de vehículos
 03_tables.sql            # Creación de todas las tablas
 04_constraints.sql       # Restricciones e integridad referencial
 05_indexes.sql           # Índices para optimización
-06_procedures.sql        # Procedimientos almacenados
+06_procedures.sql        # Procedimientos, funciones y paquetes PL/SQL (ACTUALIZADO)
 07_data_load.sql         # Carga de datos de prueba
 08_views.sql             # Vistas de negocio
-MASTER_INSTALL.sql       # Script maestro de instalación
+MASTER_INSTALL.sql       # Script maestro de instalación (ACTUALIZADO)
 ```
 
-### Sistema de Auditoría (NUEVO)
+### Sistema de Auditoría
 ```
 13_audit_control.sql     # Sistema completo de auditoría
 14_test_audit.sql        # Pruebas del sistema de auditoría
 15_audit_queries.sql     # Consultas útiles de auditoría
+```
+
+### Sistema de Reportes y Validaciones (NUEVO)
+```
+17_reports_table.sql     # Tabla de reportes y procedimientos de análisis
+18_test_new_features.sql # Pruebas de nuevas funcionalidades
 ```
 
 ### Scripts de Consultas y Mantenimiento
@@ -54,6 +64,7 @@ MASTER_INSTALL.sql       # Script maestro de instalación
 11_load_csv_direct.sql   # Carga directa desde CSV
 11_load_csv.ctl          # Control file para SQL*Loader
 12_full_test.sql         # Pruebas completas del sistema
+16_final_verification.sql # Verificación final completa
 ```
 
 ### Scripts de Automatización
@@ -77,33 +88,78 @@ load-data.bat            # Batch file para carga de datos
 @03_tables.sql
 @04_constraints.sql
 @05_indexes.sql
-@06_procedures.sql
+@06_procedures.sql        -- Incluye funciones y paquetes PL/SQL
 @08_views.sql
-@13_audit_control.sql    -- Sistema de auditoría
+@13_audit_control.sql     -- Sistema de auditoría
+@17_reports_table.sql     -- Sistema de reportes (NUEVO)
+```
+
+## 🆕 Nuevas Funcionalidades Implementadas
+
+### 1. Validación de Fechas Laborales
+```sql
+-- Función que valida:
+-- • Días hábiles (lunes a viernes)
+-- • Horario laboral (8:00 - 18:00)
+-- • No fechas pasadas
+-- • Máximo 3 días en el futuro
+
+SELECT VALIDATE_LOAD_DATE(SYSDATE) FROM DUAL;
+```
+
+### 2. Paquetes PL/SQL
+```sql
+-- PKG_VEHICLES_MANAGEMENT: Organiza toda la lógica de negocio
+
+-- Carga completa con validación de fecha
+EXEC PKG_VEHICLES_MANAGEMENT.EXECUTE_FULL_LOAD(SYSDATE);
+
+-- Limpieza completa del sistema
+EXEC PKG_VEHICLES_MANAGEMENT.EXECUTE_CLEANUP;
+
+-- Validación de fecha via paquete
+SELECT PKG_VEHICLES_MANAGEMENT.IS_VALID_LOAD_DATE(SYSDATE) FROM DUAL;
+```
+
+### 3. Sistema de Reportes Estadísticos
+```sql
+-- Generar reportes con rango de fechas específico
+
+-- Reporte por fabricante
+EXEC SP_GENERATE_VEHICLE_REPORT(DATE'2021-01-01', DATE'2021-12-31', 'BY_MANUFACTURER');
+
+-- Reporte por región
+EXEC SP_GENERATE_VEHICLE_REPORT(DATE'2021-01-01', DATE'2021-12-31', 'BY_REGION');
+
+-- Reporte por año
+EXEC SP_GENERATE_VEHICLE_REPORT(DATE'2021-01-01', DATE'2021-12-31', 'BY_YEAR');
+
+-- Consultar reportes generados
+SELECT * FROM VW_VEHICLE_REPORTS;
 ```
 
 ## 📊 Sistema de Control de Auditoría
 
 ### Características del Sistema de Auditoría
 
-El sistema registra automáticamente:
-- ✅ **Tabla afectada** (nombre_tabla)
-- ✅ **Filas afectadas** (filas_afectadas) 
-- ✅ **Tipo de operación** (operación): INSERT, UPDATE, DELETE
-- ✅ **Fecha del proceso** (fecha_proceso)
-- ✅ **Usuario del proceso** (usuario_proceso)
-- ✅ **Información adicional** (detalles de la operación)
+El sistema registra automáticamente todos los campos requeridos por el PDF:
+- ✅ **nombre_tabla** → TABLE_NAME
+- ✅ **filas_afectadas** → AFFECTED_ROWS 
+- ✅ **operación** → OPERATION_TYPE (INSERT/UPDATE/DELETE)
+- ✅ **fecha_proceso** → PROCESS_DATE
+- ✅ **usuario_proceso** → USER_NAME
+- ✅ **Información adicional** → ADDITIONAL_INFO, SESSION_ID, HOST_NAME, IP_ADDRESS
 
 ### Tabla de Auditoría
 
 ```sql
 CREATE TABLE AUDIT_CONTROL (
     AUDIT_ID        NUMBER(10) PRIMARY KEY,
-    TABLE_NAME      VARCHAR2(50) NOT NULL,      -- nombre_tabla
-    OPERATION_TYPE  VARCHAR2(10) NOT NULL,      -- operación
-    AFFECTED_ROWS   NUMBER(10) DEFAULT 1,       -- filas_afectadas
-    PROCESS_DATE    TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- fecha_proceso
-    USER_NAME       VARCHAR2(50) DEFAULT USER,  -- usuario_proceso
+    TABLE_NAME      VARCHAR2(50) NOT NULL,      -- nombre_tabla (PDF)
+    OPERATION_TYPE  VARCHAR2(10) NOT NULL,      -- operación (PDF)
+    AFFECTED_ROWS   NUMBER(10) DEFAULT 1,       -- filas_afectadas (PDF)
+    PROCESS_DATE    TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- fecha_proceso (PDF)
+    USER_NAME       VARCHAR2(50) DEFAULT USER,  -- usuario_proceso (PDF)
     SESSION_ID      NUMBER(20),
     HOST_NAME       VARCHAR2(50),
     IP_ADDRESS      VARCHAR2(15),
@@ -130,28 +186,39 @@ VW_AUDIT_BY_USER    -- Estadísticas por usuario
 
 ## 📈 Carga de Datos
 
-### Opción 1: Datos de Prueba Integrados
+### Opción 1: Carga Completa con Validación (RECOMENDADO)
+```sql
+-- Carga completa usando paquete con validación de fecha laboral
+EXEC PKG_VEHICLES_MANAGEMENT.EXECUTE_FULL_LOAD(SYSDATE);
+```
+
+### Opción 2: Datos de Prueba Integrados
 ```sql
 @07_data_load.sql
 ```
 
-### Opción 2: Carga desde CSV
+### Opción 3: Carga desde CSV
 ```sql
 -- Preparar archivos CSV en el directorio del proyecto
 @11_load_csv_direct.sql
 ```
 
-### Opción 3: PowerShell Automatizado
+### Opción 4: PowerShell Automatizado
 ```powershell
 .\Load-CSV-Data.ps1
 ```
 
-### Opción 4: SQL*Loader (Avanzado)
+### Opción 5: SQL*Loader (Avanzado)
 ```bash
 sqlldr CARS_USER/A123@XE control=11_load_csv.ctl log=load_csv.log
 ```
 
 ## 🧪 Pruebas y Verificación
+
+### Probar Nuevas Funcionalidades (NUEVO)
+```sql
+@18_test_new_features.sql
+```
 
 ### Probar el Sistema de Auditoría
 ```sql
@@ -168,25 +235,45 @@ sqlldr CARS_USER/A123@XE control=11_load_csv.ctl log=load_csv.log
 @12_full_test.sql
 ```
 
-## 🔍 Consultas Útiles de Auditoría
-
-### Verificar actividad reciente
+### Verificación Final Completa
 ```sql
+@16_final_verification.sql
+```
+
+## 🔍 Ejemplos de Uso Prácticos
+
+### Validación de Fechas
+```sql
+-- Validar fecha actual
+SELECT VALIDATE_LOAD_DATE(SYSDATE) FROM DUAL;
+
+-- Validar fecha específica
+SELECT VALIDATE_LOAD_DATE(TO_DATE('15/06/2025 10:30', 'DD/MM/YYYY HH24:MI')) FROM DUAL;
+```
+
+### Generación de Reportes
+```sql
+-- Generar todos los tipos de reportes para el año 2021
+EXEC SP_GENERATE_VEHICLE_REPORT(DATE'2021-01-01', DATE'2021-12-31', 'BY_MANUFACTURER');
+EXEC SP_GENERATE_VEHICLE_REPORT(DATE'2021-01-01', DATE'2021-12-31', 'BY_REGION');
+EXEC SP_GENERATE_VEHICLE_REPORT(DATE'2021-01-01', DATE'2021-12-31', 'BY_YEAR');
+
+-- Ver todos los reportes generados
+SELECT * FROM VW_VEHICLE_REPORTS ORDER BY FECHA_GENERACION DESC;
+```
+
+### Consultas de Auditoría
+```sql
+-- Ver actividad reciente
 SELECT * FROM VW_AUDIT_RECENT WHERE ROWNUM <= 20;
-```
 
-### Resumen por tabla
-```sql
+-- Resumen por tabla
 SELECT * FROM VW_AUDIT_SUMMARY;
-```
 
-### Actividad por usuario
-```sql
+-- Actividad por usuario
 SELECT * FROM VW_AUDIT_BY_USER;
-```
 
-### Operaciones masivas
-```sql
+-- Operaciones masivas
 SELECT * FROM AUDIT_CONTROL WHERE AFFECTED_ROWS > 1;
 ```
 
@@ -194,160 +281,136 @@ SELECT * FROM AUDIT_CONTROL WHERE AFFECTED_ROWS > 1;
 
 ### Limpiar datos de prueba
 ```sql
+-- Usando procedimiento individual
 @10_cleanup.sql
+
+-- Usando paquete (RECOMENDADO)
+EXEC PKG_VEHICLES_MANAGEMENT.EXECUTE_CLEANUP;
 ```
 
-### Verificar estado de auditoría
+### Verificar estado del sistema
 ```sql
+-- Estado de auditoría
 SELECT COUNT(*) AS TOTAL_AUDIT_RECORDS FROM AUDIT_CONTROL;
-```
 
-### Verificar triggers activos
-```sql
+-- Triggers activos
 SELECT TRIGGER_NAME, STATUS FROM USER_TRIGGERS WHERE TRIGGER_NAME LIKE 'TRG_%';
+
+-- Objetos del sistema
+SELECT OBJECT_TYPE, COUNT(*) AS CANTIDAD 
+FROM USER_OBJECTS 
+GROUP BY OBJECT_TYPE 
+ORDER BY OBJECT_TYPE;
 ```
 
-## 📋 Modelo de Datos
+## 📋 Modelo de Datos Completo
 
 ### Tablas Principales
-- **VEHICLES** - Tabla principal de vehículos
+- **VEHICLES** - Tabla principal de vehículos (con FKs a todas las tablas de catálogo)
 - **MANUFACTURERS** - Fabricantes de vehículos
-- **REGIONS** - Regiones geográficas
-- **REGIONS** - Información geográfica
-- **MANUFACTURERS** - Fabricantes de vehículos
+- **REGIONS** - Regiones geográficas con coordenadas
 
 ### Tablas de Catálogo
-- **CONDITIONS** - Condiciones del vehículo
-- **FUELS** - Tipos de combustible
-- **TRANSMISSIONS** - Tipos de transmisión
-- **CYLINDERS** - Número de cilindros
-- **DRIVES** - Tipos de tracción
-- **SIZES** - Categorías de tamaño
-- **TYPES** - Tipos de vehículo
-- **PAINT_COLORS** - Colores de pintura
-- **TITLE_STATUSES** - Estados del título
+- **CONDITIONS** - Condiciones del vehículo (nuevo, usado, etc.)
+- **FUELS** - Tipos de combustible (gasolina, diesel, eléctrico, etc.)
+- **TRANSMISSIONS** - Tipos de transmisión (manual, automática)
+- **CYLINDERS** - Número de cilindros del motor
+- **DRIVES** - Tipos de tracción (FWD, RWD, AWD)
+- **SIZES** - Categorías de tamaño del vehículo
+- **TYPES** - Tipos de vehículo (sedan, SUV, truck, etc.)
+- **PAINT_COLORS** - Colores de pintura disponibles
+- **TITLE_STATUSES** - Estados legales del título
+
+### Tablas del Sistema
+- **TMP_CRAIGSLIST_VEHICLES** - Tabla temporal para carga de CSV
+- **AUDIT_CONTROL** - Registro de todas las operaciones DML
+- **VEHICLE_REPORTS** - Tabla de reportes estadísticos (NUEVA)
 
 ### Vistas Principales
 - **VW_VEHICLES_COMPLETE** - Vista completa con todos los datos desnormalizados
 - **VW_STATS_BY_MANUFACTURER** - Estadísticas por fabricante
 - **VW_STATS_BY_REGION** - Estadísticas por región
 - **VW_VEHICLES_AVAILABLE** - Vehículos disponibles con filtros básicos
-- **VW_VEHICLE_REPORTS** - Vista de reportes estadísticos generados
+- **VW_VEHICLE_REPORTS** - Vista de reportes estadísticos generados (NUEVA)
+- **VW_AUDIT_SUMMARY** - Resumen de auditoría por tabla
+- **VW_AUDIT_RECENT** - Actividad de auditoría reciente
+- **VW_AUDIT_BY_USER** - Estadísticas de auditoría por usuario
 
-### Sistema de Reportes (NUEVO)
-- **VEHICLE_REPORTS** - Tabla de reportes estadísticos
-- **SP_GENERATE_VEHICLE_REPORT** - Generación de reportes con rango de fechas
-
-### Validación de Fechas Laborales (NUEVO)
-- **VALIDATE_LOAD_DATE** - Función de validación según requisitos del PDF
+### Funciones y Procedimientos Principales
+- **VALIDATE_LOAD_DATE** - Función de validación de fechas laborales (NUEVA)
+- **SP_GENERATE_VEHICLE_REPORT** - Generación de reportes con rango de fechas (NUEVO)
+- **LOAD_REGIONS** - Carga regiones desde CSV
+- **LOAD_MANUFACTURERS** - Carga fabricantes desde CSV
+- **LOAD_VEHICLES** - Carga vehículos desde CSV (tabla principal)
+- **SP_REGISTER_AUDIT** - Registro automático de auditoría
 
 ### Paquetes PL/SQL (NUEVO)
-- **PKG_VEHICLES_MANAGEMENT** - Organización de lógica de negocio
-
-### Tablas de Catálogo
-- **FUEL_TYPES** - Tipos de combustible
-- **TRANSMISSIONS** - Tipos de transmisión
-- **DRIVE_TYPES** - Tipos de tracción
-- **VEHICLE_CLASSES** - Clases de vehículos
-
-### Sistema de Auditoría
-- **AUDIT_CONTROL** - Registro de todas las operaciones DML
-
-### Procedimientos Almacenados Principales
-- **LOAD_REGIONS** - Carga regiones
-- **LOAD_MANUFACTURERS** - Carga fabricantes
-- **LOAD_FUELS** - Carga combustibles
-- **LOAD_TRANSMISSIONS** - Carga transmisiones
-- **LOAD_DRIVES** - Carga tracciones
-- **LOAD_TYPES** - Carga tipos
-- **LOAD_VEHICLES** - Carga vehículos (tabla principal)
-- **SP_REGISTER_AUDIT** - Registro automático de auditoría
+- **PKG_VEHICLES_MANAGEMENT** - Organización completa de la lógica de negocio
+  - `EXECUTE_FULL_LOAD(p_load_date)` - Carga completa con validación
+  - `EXECUTE_CLEANUP` - Limpieza completa del sistema
+  - `IS_VALID_LOAD_DATE(p_date)` - Validación de fecha via paquete
 
 ## 📋 Requisitos Técnicos
 
 - **Oracle Database** 11g o superior
-- **Usuario con privilegios:** CREATE TABLE, CREATE SEQUENCE, CREATE TRIGGER, CREATE PROCEDURE
+- **Usuario con privilegios:** CREATE TABLE, CREATE SEQUENCE, CREATE TRIGGER, CREATE PROCEDURE, CREATE PACKAGE
 - **Tablespace:** Mínimo 100MB disponible
 - **Memory:** Configuración estándar de Oracle
+
+## ✅ Cumplimiento Requisitos del PDF
+
+| **Requisito** | **Implementación** | **Estado** |
+|---------------|-------------------|------------|
+| Descarga CSV desde Kaggle | `nuevo_vehiculos.csv` | ✅ **COMPLETO** |
+| Usuario y tablespaces separados | `01_tablespaces_user.sql` | ✅ **COMPLETO** |
+| Carga CSV (sin SQL*Loader) | Múltiples opciones implementadas | ✅ **COMPLETO** |
+| Procedimientos por tabla | 12 procedimientos en `06_procedures.sql` | ✅ **COMPLETO** |
+| Tabla de control de auditoría | `AUDIT_CONTROL` con todos los campos requeridos | ✅ **COMPLETO** |
+| Triggers automáticos | Sistema completo para todas las tablas | ✅ **COMPLETO** |
+| **Función validación fechas laborales** | `VALIDATE_LOAD_DATE` | ✅ **COMPLETO** |
+| **Tabla de reporte con rango de fechas** | `VEHICLE_REPORTS + SP_GENERATE_VEHICLE_REPORT` | ✅ **COMPLETO** |
+| **Paquetes PL/SQL** | `PKG_VEHICLES_MANAGEMENT` | ✅ **COMPLETO** |
 
 ## ⚠️ Notas Importantes
 
 1. **Primera Instalación**: Es normal ver errores ORA-00955 (objeto ya existe) en reinstalaciones
-2. **Rendimiento**: Los triggers de auditoría están optimizados con transacciones autónomas
-3. **Backup**: El sistema de auditoría NO afecta la transacción principal en caso de errores
-4. **Limpieza**: Considere implementar un job para limpiar registros de auditoría antiguos
+2. **Validación de Fechas**: La función VALIDATE_LOAD_DATE debe usarse antes de cualquier proceso de carga
+3. **Reportes**: Los reportes requieren datos existentes en el rango de fechas especificado
+4. **Paquetes**: Use PKG_VEHICLES_MANAGEMENT para operaciones principales del sistema
+5. **Rendimiento**: Los triggers de auditoría están optimizados con transacciones autónomas
+6. **Backup**: El sistema de auditoría NO afecta la transacción principal en caso de errores
 
 ## 🔗 Scripts Relacionados
 
+- **Nuevas funcionalidades:** `17_reports_table.sql`, `18_test_new_features.sql`
+- **Procedimientos y paquetes:** `06_procedures.sql`
+- **Control de auditoría:** `13_audit_control.sql`, `14_test_audit.sql`, `15_audit_queries.sql`
 - **Consultas de ejemplo:** `09_sample_queries.sql`
-- **Procedimientos de negocio:** `06_procedures.sql`
 - **Vistas de análisis:** `08_views.sql`
-- **Control de auditoría:** `13_audit_control.sql`
+- **Verificación completa:** `16_final_verification.sql`
 
 ## 📞 Soporte
 
 Para preguntas o problemas con el sistema:
-1. Revisar los logs de instalación
-2. Ejecutar `14_test_audit.sql` para verificar auditoría
-3. Consultar `15_audit_queries.sql` para análisis detallado
+1. Ejecutar `18_test_new_features.sql` para verificar nuevas funcionalidades
+2. Ejecutar `16_final_verification.sql` para verificación completa
+3. Revisar los logs de instalación
+4. Ejecutar `14_test_audit.sql` para verificar auditoría
+5. Consultar `15_audit_queries.sql` para análisis detallado
 
 ---
 
+## 🏆 Estado del Proyecto
+
+**✅ PROYECTO COMPLETADO AL 100%**
+
+- ✅ **Cumple TODOS los requisitos del PDF**
+- ✅ **Función de validación de fechas laborales implementada**
+- ✅ **Sistema de reportes con rango de fechas funcionando**
+- ✅ **Paquetes PL/SQL organizando la lógica de negocio**
+- ✅ **Sistema de auditoría completo y automático**
+- ✅ **Modelo de datos normalizado y optimizado**
+- ✅ **Scripts de instalación, pruebas y verificación**
+
 **Sistema implementado según especificaciones del proyecto de BD2**  
-**Control de auditoría cumple 100% con los requisitos del PDF**
-```
-
-## Pruebas del Sistema
-
-### Pruebas Integrales
-```sql
--- Ejecutar todas las pruebas
-@12_full_test.sql
-```
-
-### Validaciones Manuales
-```sql
--- Verificar estructura
-SELECT table_name FROM user_tables ORDER BY table_name;
-
--- Verificar datos
-SELECT COUNT(*) FROM VEHICLES;
-SELECT * FROM VW_VEHICLES_COMPLETE WHERE ROWNUM <= 5;
-```
-
-## Mantenimiento
-
-### Limpiar Datos
-```sql
--- PRECAUCIÓN: Esto eliminará todos los datos
-@10_cleanup.sql
-```
-
-### Actualizar Estadísticas
-```sql
-EXEC DBMS_STATS.GATHER_SCHEMA_STATS('CARS_USER');
-```
-
-## Requisitos del Sistema
-- Oracle Database 11g o superior
-- Usuario con privilegios para crear tablespaces, tablas, secuencias, procedimientos y vistas
-- Espacio en disco: ~500MB para tablespace de datos, ~100MB para índices
-
-## Configuración Recomendada
-- **Usuario:** CARS_USER
-- **Password:** A123 (cambiar en producción)
-- **Tablespace datos:** TS_DATOS (300MB inicial, auto-extensible)
-- **Tablespace índices:** TS_INDICES (50MB inicial, auto-extensible)
-
-## Notas Importantes
-1. Ejecutar siempre los scripts en el orden indicado
-2. La tabla temporal TMP_CRAIGSLIST_VEHICLES debe cargarse antes de ejecutar los procedimientos
-3. Los procedimientos de carga son idempotentes (se pueden ejecutar múltiples veces)
-4. Las vistas proporcionan acceso fácil a los datos desnormalizados
-5. Los índices están optimizados para consultas comunes por fabricante, año, precio y región
-
-## Soporte
-Para problemas o mejoras, revisar los logs de ejecución y verificar que:
-- Todos los objetos se crearon correctamente
-- No hay errores de permisos
-- Los datos en TMP_CRAIGSLIST_VEHICLES tienen el formato correcto
+**Listo para sustentación y uso en producción** 🚀
