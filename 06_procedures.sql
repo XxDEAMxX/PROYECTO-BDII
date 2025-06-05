@@ -311,3 +311,168 @@ BEGIN
    DBMS_OUTPUT.PUT_LINE('Errores encontrados: ' || v_errors);
 END;
 /
+
+-- =====================================================
+-- FUNCIÓN DE VALIDACIÓN DE FECHAS LABORALES
+-- =====================================================
+
+-- Función para validar fechas de carga según requisitos del PDF
+CREATE OR REPLACE FUNCTION VALIDATE_LOAD_DATE(
+    p_date IN DATE
+) RETURN BOOLEAN IS
+    v_day_name VARCHAR2(10);
+    v_hour NUMBER;
+    v_days_diff NUMBER;
+BEGIN
+    -- Verificar que la fecha no sea nula
+    IF p_date IS NULL THEN
+        RAISE_APPLICATION_ERROR(-20001, 'ERROR: La fecha de carga no puede ser nula');
+    END IF;
+    
+    -- Obtener día de la semana
+    v_day_name := TO_CHAR(p_date, 'DAY', 'NLS_DATE_LANGUAGE=ENGLISH');
+    v_day_name := TRIM(v_day_name);
+    
+    -- Verificar día hábil (lunes a viernes)
+    IF v_day_name IN ('SATURDAY', 'SUNDAY') THEN
+        RAISE_APPLICATION_ERROR(-20002, 'ERROR: La fecha debe corresponder a un día hábil (lunes a viernes)');
+    END IF;
+    
+    -- Obtener hora
+    v_hour := TO_NUMBER(TO_CHAR(p_date, 'HH24'));
+    
+    -- Verificar horario laboral (8 AM a 6 PM)
+    IF v_hour < 8 OR v_hour > 18 THEN
+        RAISE_APPLICATION_ERROR(-20003, 'ERROR: La hora debe estar dentro del horario laboral (8:00 - 18:00)');
+    END IF;
+    
+    -- Verificar que no sea fecha pasada
+    IF TRUNC(p_date) < TRUNC(SYSDATE) THEN
+        RAISE_APPLICATION_ERROR(-20004, 'ERROR: No se permiten fechas en el pasado');
+    END IF;
+    
+    -- Verificar que no sea más de 3 días en el futuro
+    v_days_diff := TRUNC(p_date) - TRUNC(SYSDATE);
+    IF v_days_diff > 3 THEN
+        RAISE_APPLICATION_ERROR(-20005, 'ERROR: No se permiten fechas con más de 3 días de anticipación');
+    END IF;
+    
+    RETURN TRUE;
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE;
+END VALIDATE_LOAD_DATE;
+/
+
+-- =====================================================
+-- PAQUETE PARA ORGANIZAR LÓGICA DE NEGOCIO
+-- =====================================================
+
+-- Especificación del paquete
+CREATE OR REPLACE PACKAGE PKG_VEHICLES_MANAGEMENT AS
+    -- Procedimientos de carga principales
+    PROCEDURE EXECUTE_FULL_LOAD(p_load_date IN DATE);
+    PROCEDURE EXECUTE_CLEANUP;
+    
+    -- Función de validación
+    FUNCTION IS_VALID_LOAD_DATE(p_date IN DATE) RETURN BOOLEAN;
+END PKG_VEHICLES_MANAGEMENT;
+/
+
+-- Cuerpo del paquete
+CREATE OR REPLACE PACKAGE BODY PKG_VEHICLES_MANAGEMENT AS
+    
+    -- Implementación de validación de fecha
+    FUNCTION IS_VALID_LOAD_DATE(p_date IN DATE) RETURN BOOLEAN IS
+    BEGIN
+        RETURN VALIDATE_LOAD_DATE(p_date);
+    EXCEPTION
+        WHEN OTHERS THEN
+            RETURN FALSE;
+    END IS_VALID_LOAD_DATE;
+    
+    -- Procedimiento principal de carga con validación de fecha
+    PROCEDURE EXECUTE_FULL_LOAD(p_load_date IN DATE) IS
+    BEGIN
+        -- Validar fecha antes de proceder
+        IF NOT VALIDATE_LOAD_DATE(p_load_date) THEN
+            RAISE_APPLICATION_ERROR(-20010, 'Fecha de carga inválida');
+        END IF;
+        
+        -- Registrar inicio del proceso de carga
+        SP_REGISTER_AUDIT(
+            p_table_name => 'SISTEMA',
+            p_operation_type => 'LOAD_START',
+            p_affected_rows => 0,
+            p_additional_info => 'Inicio de carga completa - Fecha: ' || TO_CHAR(p_load_date, 'DD/MM/YYYY HH24:MI:SS')
+        );
+        
+        DBMS_OUTPUT.PUT_LINE('=== INICIANDO CARGA COMPLETA VIA PAQUETE ===');
+        DBMS_OUTPUT.PUT_LINE('Fecha de carga validada: ' || TO_CHAR(p_load_date, 'DD/MM/YYYY HH24:MI:SS'));
+        
+        -- Ejecutar carga de datos
+        LOAD_REGIONS;
+        LOAD_MANUFACTURERS;
+        LOAD_CONDITIONS;
+        LOAD_CYLINDERS;
+        LOAD_FUELS;
+        LOAD_TITLE_STATUSES;
+        LOAD_TRANSMISSIONS;
+        LOAD_DRIVES;
+        LOAD_SIZES;
+        LOAD_TYPES;
+        LOAD_PAINT_COLORS;
+        LOAD_VEHICLES;
+        
+        -- Registrar finalización del proceso
+        SP_REGISTER_AUDIT(
+            p_table_name => 'SISTEMA',
+            p_operation_type => 'LOAD_END',
+            p_affected_rows => 0,
+            p_additional_info => 'Carga completa finalizada exitosamente'
+        );
+        
+        DBMS_OUTPUT.PUT_LINE('=== CARGA COMPLETA FINALIZADA EXITOSAMENTE ===');
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            SP_REGISTER_AUDIT(
+                p_table_name => 'SISTEMA',
+                p_operation_type => 'LOAD_ERROR',
+                p_affected_rows => 0,
+                p_additional_info => 'Error en carga: ' || SQLERRM
+            );
+            RAISE;
+    END EXECUTE_FULL_LOAD;
+    
+    -- Procedimiento de limpieza
+    PROCEDURE EXECUTE_CLEANUP IS
+    BEGIN
+        DELETE FROM VEHICLES;
+        DELETE FROM PAINT_COLORS;
+        DELETE FROM TYPES;
+        DELETE FROM SIZES;
+        DELETE FROM DRIVES;
+        DELETE FROM TRANSMISSIONS;
+        DELETE FROM TITLE_STATUSES;
+        DELETE FROM FUELS;
+        DELETE FROM CYLINDERS;
+        DELETE FROM CONDITIONS;
+        DELETE FROM MANUFACTURERS;
+        DELETE FROM REGIONS;
+        DELETE FROM TMP_CRAIGSLIST_VEHICLES;
+        
+        COMMIT;
+        
+        SP_REGISTER_AUDIT(
+            p_table_name => 'SISTEMA',
+            p_operation_type => 'CLEANUP',
+            p_affected_rows => SQL%ROWCOUNT,
+            p_additional_info => 'Limpieza completa de todas las tablas'
+        );
+        
+        DBMS_OUTPUT.PUT_LINE('=== LIMPIEZA COMPLETA REALIZADA ===');
+    END EXECUTE_CLEANUP;
+    
+END PKG_VEHICLES_MANAGEMENT;
+/

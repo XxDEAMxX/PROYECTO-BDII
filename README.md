@@ -232,10 +232,18 @@ SELECT TRIGGER_NAME, STATUS FROM USER_TRIGGERS WHERE TRIGGER_NAME LIKE 'TRG_%';
 - **VW_STATS_BY_MANUFACTURER** - Estadísticas por fabricante
 - **VW_STATS_BY_REGION** - Estadísticas por región
 - **VW_VEHICLES_AVAILABLE** - Vehículos disponibles con filtros básicos
+- **VW_VEHICLE_REPORTS** - Vista de reportes estadísticos generados
 
-## Procedimientos Almacenados
+### Sistema de Reportes (NUEVO)
+- **VEHICLE_REPORTS** - Tabla de reportes estadísticos
+- **SP_GENERATE_VEHICLE_REPORT** - Generación de reportes con rango de fechas
 
-### Procedimientos de Carga
+### Validación de Fechas Laborales (NUEVO)
+- **VALIDATE_LOAD_DATE** - Función de validación según requisitos del PDF
+
+### Paquetes PL/SQL (NUEVO)
+- **PKG_VEHICLES_MANAGEMENT** - Organización de lógica de negocio
+
 ### Tablas de Catálogo
 - **FUEL_TYPES** - Tipos de combustible
 - **TRANSMISSIONS** - Tipos de transmisión
