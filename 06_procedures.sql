@@ -1,13 +1,14 @@
 -- =====================================================
--- SCRIPT: 06_procedures.sql
+-- SCRIPT: 06_procedures.sql (CORREGIDO)
 -- PROPOSITO: Procedimientos almacenados para carga de datos
--- AUTOR: Daniel Arevalo - Alex Hernandez
+-- AUTOR: Daniel Arevalo - Alex Hernandez  
 -- FECHA: Junio 2025
 -- =====================================================
 
 -- Procedimiento para cargar REGIONS
 CREATE OR REPLACE PROCEDURE LOAD_REGIONS AS
    v_id NUMBER;
+   v_count NUMBER := 0;
 BEGIN
    FOR rec IN (
       SELECT DISTINCT REGION, REGION_URL, COUNTRY, STATE_DATA, LAT, LONGITUDE
@@ -23,15 +24,18 @@ BEGIN
          WHEN NO_DATA_FOUND THEN
             INSERT INTO REGIONS (REGION, REGION_URL, COUNTRY, STATE_DATA, LAT, LONGITUDE)
             VALUES (rec.REGION, rec.REGION_URL, rec.COUNTRY, rec.STATE_DATA, rec.LAT, rec.LONGITUDE);
+            v_count := v_count + 1;
       END;
    END LOOP;
    COMMIT;
+   DBMS_OUTPUT.PUT_LINE('REGIONS cargadas: ' || v_count);
 END;
 /
 
 -- Procedimiento para cargar MANUFACTURERS
 CREATE OR REPLACE PROCEDURE LOAD_MANUFACTURERS AS
    v_id NUMBER;
+   v_count NUMBER := 0;
 BEGIN
    FOR rec IN (
       SELECT DISTINCT MANUFACTURER FROM TMP_CRAIGSLIST_VEHICLES
@@ -42,15 +46,18 @@ BEGIN
       EXCEPTION
          WHEN NO_DATA_FOUND THEN
             INSERT INTO MANUFACTURERS (NAME) VALUES (rec.MANUFACTURER);
+            v_count := v_count + 1;
       END;
    END LOOP;
    COMMIT;
+   DBMS_OUTPUT.PUT_LINE('MANUFACTURERS cargados: ' || v_count);
 END;
 /
 
 -- Procedimiento para cargar CONDITIONS
 CREATE OR REPLACE PROCEDURE LOAD_CONDITIONS AS
    v_id NUMBER;
+   v_count NUMBER := 0;
 BEGIN
    FOR rec IN (
       SELECT DISTINCT CONDITION FROM TMP_CRAIGSLIST_VEHICLES
@@ -61,15 +68,18 @@ BEGIN
       EXCEPTION
          WHEN NO_DATA_FOUND THEN
             INSERT INTO CONDITIONS (NAME) VALUES (rec.CONDITION);
+            v_count := v_count + 1;
       END;
    END LOOP;
    COMMIT;
+   DBMS_OUTPUT.PUT_LINE('CONDITIONS cargadas: ' || v_count);
 END;
 /
 
 -- Procedimiento para cargar CYLINDERS
 CREATE OR REPLACE PROCEDURE LOAD_CYLINDERS AS
    v_id NUMBER;
+   v_count NUMBER := 0;
 BEGIN
    FOR rec IN (
       SELECT DISTINCT CYLINDERS FROM TMP_CRAIGSLIST_VEHICLES
@@ -80,15 +90,18 @@ BEGIN
       EXCEPTION
          WHEN NO_DATA_FOUND THEN
             INSERT INTO CYLINDERS (NAME) VALUES (rec.CYLINDERS);
+            v_count := v_count + 1;
       END;
    END LOOP;
    COMMIT;
+   DBMS_OUTPUT.PUT_LINE('CYLINDERS cargados: ' || v_count);
 END;
 /
 
 -- Procedimiento para cargar FUELS
 CREATE OR REPLACE PROCEDURE LOAD_FUELS AS
    v_id NUMBER;
+   v_count NUMBER := 0;
 BEGIN
    FOR rec IN (
       SELECT DISTINCT FUEL FROM TMP_CRAIGSLIST_VEHICLES
@@ -99,15 +112,18 @@ BEGIN
       EXCEPTION
          WHEN NO_DATA_FOUND THEN
             INSERT INTO FUELS (NAME) VALUES (rec.FUEL);
+            v_count := v_count + 1;
       END;
    END LOOP;
    COMMIT;
+   DBMS_OUTPUT.PUT_LINE('FUELS cargados: ' || v_count);
 END;
 /
 
 -- Procedimiento para cargar TITLE_STATUSES
 CREATE OR REPLACE PROCEDURE LOAD_TITLE_STATUSES AS
    v_id NUMBER;
+   v_count NUMBER := 0;
 BEGIN
    FOR rec IN (
       SELECT DISTINCT TITLE_STATUS FROM TMP_CRAIGSLIST_VEHICLES
@@ -118,15 +134,18 @@ BEGIN
       EXCEPTION
          WHEN NO_DATA_FOUND THEN
             INSERT INTO TITLE_STATUSES (NAME) VALUES (rec.TITLE_STATUS);
+            v_count := v_count + 1;
       END;
    END LOOP;
    COMMIT;
+   DBMS_OUTPUT.PUT_LINE('TITLE_STATUSES cargados: ' || v_count);
 END;
 /
 
 -- Procedimiento para cargar TRANSMISSIONS
 CREATE OR REPLACE PROCEDURE LOAD_TRANSMISSIONS AS
    v_id NUMBER;
+   v_count NUMBER := 0;
 BEGIN
    FOR rec IN (
       SELECT DISTINCT TRANSMISSION FROM TMP_CRAIGSLIST_VEHICLES
@@ -137,15 +156,18 @@ BEGIN
       EXCEPTION
          WHEN NO_DATA_FOUND THEN
             INSERT INTO TRANSMISSIONS (NAME) VALUES (rec.TRANSMISSION);
+            v_count := v_count + 1;
       END;
    END LOOP;
    COMMIT;
+   DBMS_OUTPUT.PUT_LINE('TRANSMISSIONS cargadas: ' || v_count);
 END;
 /
 
 -- Procedimiento para cargar DRIVES
 CREATE OR REPLACE PROCEDURE LOAD_DRIVES AS
    v_id NUMBER;
+   v_count NUMBER := 0;
 BEGIN
    FOR rec IN (
       SELECT DISTINCT DRIVE FROM TMP_CRAIGSLIST_VEHICLES
@@ -156,15 +178,18 @@ BEGIN
       EXCEPTION
          WHEN NO_DATA_FOUND THEN
             INSERT INTO DRIVES (NAME) VALUES (rec.DRIVE);
+            v_count := v_count + 1;
       END;
    END LOOP;
    COMMIT;
+   DBMS_OUTPUT.PUT_LINE('DRIVES cargados: ' || v_count);
 END;
 /
 
 -- Procedimiento para cargar SIZES
 CREATE OR REPLACE PROCEDURE LOAD_SIZES AS
    v_id NUMBER;
+   v_count NUMBER := 0;
 BEGIN
    FOR rec IN (
       SELECT DISTINCT SIZE_DATA FROM TMP_CRAIGSLIST_VEHICLES
@@ -175,15 +200,18 @@ BEGIN
       EXCEPTION
          WHEN NO_DATA_FOUND THEN
             INSERT INTO SIZES (NAME) VALUES (rec.SIZE_DATA);
+            v_count := v_count + 1;
       END;
    END LOOP;
    COMMIT;
+   DBMS_OUTPUT.PUT_LINE('SIZES cargados: ' || v_count);
 END;
 /
 
 -- Procedimiento para cargar TYPES
 CREATE OR REPLACE PROCEDURE LOAD_TYPES AS
    v_id NUMBER;
+   v_count NUMBER := 0;
 BEGIN
    FOR rec IN (
       SELECT DISTINCT TYPE_DATA FROM TMP_CRAIGSLIST_VEHICLES
@@ -194,15 +222,18 @@ BEGIN
       EXCEPTION
          WHEN NO_DATA_FOUND THEN
             INSERT INTO TYPES (NAME) VALUES (rec.TYPE_DATA);
+            v_count := v_count + 1;
       END;
    END LOOP;
    COMMIT;
+   DBMS_OUTPUT.PUT_LINE('TYPES cargados: ' || v_count);
 END;
 /
 
 -- Procedimiento para cargar PAINT_COLORS
 CREATE OR REPLACE PROCEDURE LOAD_PAINT_COLORS AS
    v_id NUMBER;
+   v_count NUMBER := 0;
 BEGIN
    FOR rec IN (
       SELECT DISTINCT PAINT_COLOR FROM TMP_CRAIGSLIST_VEHICLES
@@ -213,13 +244,15 @@ BEGIN
       EXCEPTION
          WHEN NO_DATA_FOUND THEN
             INSERT INTO PAINT_COLORS (NAME) VALUES (rec.PAINT_COLOR);
+            v_count := v_count + 1;
       END;
    END LOOP;
    COMMIT;
+   DBMS_OUTPUT.PUT_LINE('PAINT_COLORS cargados: ' || v_count);
 END;
 /
 
--- Procedimiento para cargar VEHICLES (requiere que las tablas referenciales ya estén cargadas)
+-- Procedimiento para cargar VEHICLES
 CREATE OR REPLACE PROCEDURE LOAD_VEHICLES AS
    v_region_id       NUMBER;
    v_manufacturer_id NUMBER;
@@ -316,7 +349,6 @@ END;
 -- FUNCIÓN DE VALIDACIÓN DE FECHAS LABORALES
 -- =====================================================
 
--- Función para validar fechas de carga según requisitos del PDF
 CREATE OR REPLACE FUNCTION VALIDATE_LOAD_DATE(
     p_date IN DATE
 ) RETURN BOOLEAN IS
@@ -364,263 +396,4 @@ EXCEPTION
 END VALIDATE_LOAD_DATE;
 /
 
--- =====================================================
--- PAQUETE PARA ORGANIZAR LÓGICA DE NEGOCIO
--- =====================================================
-
--- Especificación del paquete
-CREATE OR REPLACE PACKAGE PKG_VEHICLES_MANAGEMENT AS
-    -- Procedimientos de carga principales
-    PROCEDURE EXECUTE_FULL_LOAD(p_load_date IN DATE);
-    PROCEDURE EXECUTE_CLEANUP;
-    
-    -- Función de validación
-    FUNCTION IS_VALID_LOAD_DATE(p_date IN DATE) RETURN BOOLEAN;
-END PKG_VEHICLES_MANAGEMENT;
-/
-
--- Cuerpo del paquete
-CREATE OR REPLACE PACKAGE BODY PKG_VEHICLES_MANAGEMENT AS
-    
-    -- Implementación de validación de fecha
-    FUNCTION IS_VALID_LOAD_DATE(p_date IN DATE) RETURN BOOLEAN IS
-    BEGIN
-        RETURN VALIDATE_LOAD_DATE(p_date);
-    EXCEPTION
-        WHEN OTHERS THEN
-            RETURN FALSE;
-    END IS_VALID_LOAD_DATE;
-    
-    -- Procedimiento principal de carga con validación de fecha
-    PROCEDURE EXECUTE_FULL_LOAD(p_load_date IN DATE) IS
-    BEGIN
-        -- Validar fecha antes de proceder
-        IF NOT VALIDATE_LOAD_DATE(p_load_date) THEN
-            RAISE_APPLICATION_ERROR(-20010, 'Fecha de carga inválida');
-        END IF;
-        
-        -- Registrar inicio del proceso de carga
-        SP_REGISTER_AUDIT(
-            p_table_name => 'SISTEMA',
-            p_operation_type => 'LOAD_START',
-            p_affected_rows => 0,
-            p_additional_info => 'Inicio de carga completa - Fecha: ' || TO_CHAR(p_load_date, 'DD/MM/YYYY HH24:MI:SS')
-        );
-        
-        DBMS_OUTPUT.PUT_LINE('=== INICIANDO CARGA COMPLETA VIA PAQUETE ===');
-        DBMS_OUTPUT.PUT_LINE('Fecha de carga validada: ' || TO_CHAR(p_load_date, 'DD/MM/YYYY HH24:MI:SS'));
-        
-        -- Ejecutar carga de datos
-        LOAD_REGIONS;
-        LOAD_MANUFACTURERS;
-        LOAD_CONDITIONS;
-        LOAD_CYLINDERS;
-        LOAD_FUELS;
-        LOAD_TITLE_STATUSES;
-        LOAD_TRANSMISSIONS;
-        LOAD_DRIVES;
-        LOAD_SIZES;
-        LOAD_TYPES;
-        LOAD_PAINT_COLORS;
-        LOAD_VEHICLES;
-        
-        -- Registrar finalización del proceso
-        SP_REGISTER_AUDIT(
-            p_table_name => 'SISTEMA',
-            p_operation_type => 'LOAD_END',
-            p_affected_rows => 0,
-            p_additional_info => 'Carga completa finalizada exitosamente'
-        );
-        
-        DBMS_OUTPUT.PUT_LINE('=== CARGA COMPLETA FINALIZADA EXITOSAMENTE ===');
-        
-    EXCEPTION
-        WHEN OTHERS THEN
-            SP_REGISTER_AUDIT(
-                p_table_name => 'SISTEMA',
-                p_operation_type => 'LOAD_ERROR',
-                p_affected_rows => 0,
-                p_additional_info => 'Error en carga: ' || SQLERRM
-            );
-            RAISE;
-    END EXECUTE_FULL_LOAD;
-    
-    -- Procedimiento de limpieza
-    PROCEDURE EXECUTE_CLEANUP IS
-    BEGIN
-        DELETE FROM VEHICLES;
-        DELETE FROM PAINT_COLORS;
-        DELETE FROM TYPES;
-        DELETE FROM SIZES;
-        DELETE FROM DRIVES;
-        DELETE FROM TRANSMISSIONS;
-        DELETE FROM TITLE_STATUSES;
-        DELETE FROM FUELS;
-        DELETE FROM CYLINDERS;
-        DELETE FROM CONDITIONS;
-        DELETE FROM MANUFACTURERS;
-        DELETE FROM REGIONS;
-        DELETE FROM TMP_CRAIGSLIST_VEHICLES;
-        
-        COMMIT;
-        
-        SP_REGISTER_AUDIT(
-            p_table_name => 'SISTEMA',
-            p_operation_type => 'CLEANUP',
-            p_affected_rows => SQL%ROWCOUNT,
-            p_additional_info => 'Limpieza completa de todas las tablas'
-        );
-        
-        DBMS_OUTPUT.PUT_LINE('=== LIMPIEZA COMPLETA REALIZADA ===');
-    END EXECUTE_CLEANUP;
-    
-END PKG_VEHICLES_MANAGEMENT;
-/
-
--- =====================================================
--- PROCEDIMIENTO PARA GENERAR REPORTES CON RANGO DE FECHAS
--- =====================================================
-
--- Procedimiento para generar reportes estadísticos
-CREATE OR REPLACE PROCEDURE SP_GENERATE_VEHICLE_REPORT(
-    p_start_date IN DATE,
-    p_end_date IN DATE,
-    p_report_type IN VARCHAR2 DEFAULT 'BY_MANUFACTURER'
-) IS
-    v_count NUMBER := 0;
-    v_validation_date DATE;
-BEGIN
-    -- Validar fecha actual para procesamiento
-    v_validation_date := SYSDATE;
-    IF NOT VALIDATE_LOAD_DATE(v_validation_date) THEN
-        RAISE_APPLICATION_ERROR(-20010, 'No se puede procesar reporte fuera del horario laboral');
-    END IF;
-    
-    -- Validar que las fechas sean coherentes
-    IF p_start_date > p_end_date THEN
-        RAISE_APPLICATION_ERROR(-20011, 'La fecha de inicio debe ser anterior a la fecha fin');
-    END IF;
-    
-    -- Verificar que existan datos en el rango especificado
-    SELECT COUNT(*) INTO v_count
-    FROM VEHICLES 
-    WHERE POSTING_DATE BETWEEN p_start_date AND p_end_date;
-    
-    IF v_count = 0 THEN
-        RAISE_APPLICATION_ERROR(-20012, 'No existen datos en el rango de fechas especificado');
-    END IF;
-    
-    DBMS_OUTPUT.PUT_LINE('Generando reporte ' || p_report_type || ' para período: ' || 
-                         TO_CHAR(p_start_date, 'DD/MM/YYYY') || ' - ' || TO_CHAR(p_end_date, 'DD/MM/YYYY'));
-    
-    -- Limpiar reportes anteriores del mismo tipo y período
-    DELETE FROM VEHICLE_REPORTS 
-    WHERE REPORT_TYPE = p_report_type 
-    AND PERIOD_START = p_start_date 
-    AND PERIOD_END = p_end_date;
-    
-    -- Generar reporte por fabricante
-    IF p_report_type = 'BY_MANUFACTURER' THEN
-        INSERT INTO VEHICLE_REPORTS (
-            REPORT_TYPE, PERIOD_START, PERIOD_END,
-            DIMENSION_KEY, DIMENSION_VALUE, TOTAL_VEHICLES,
-            AVG_PRICE, MIN_PRICE, MAX_PRICE, TOTAL_VALUE
-        )
-        SELECT 
-            'BY_MANUFACTURER',
-            p_start_date,
-            p_end_date,
-            'MANUFACTURER',
-            m.NAME,
-            COUNT(*),
-            ROUND(AVG(v.PRICE), 2),
-            MIN(v.PRICE),
-            MAX(v.PRICE),
-            SUM(v.PRICE)
-        FROM VEHICLES v
-        INNER JOIN MANUFACTURERS m ON v.MANUFACTURER_ID = m.ID
-        WHERE v.POSTING_DATE BETWEEN p_start_date AND p_end_date
-        AND v.PRICE IS NOT NULL
-        GROUP BY m.ID, m.NAME;
-        
-    -- Generar reporte por región
-    ELSIF p_report_type = 'BY_REGION' THEN
-        INSERT INTO VEHICLE_REPORTS (
-            REPORT_TYPE, PERIOD_START, PERIOD_END,
-            DIMENSION_KEY, DIMENSION_VALUE, TOTAL_VEHICLES,
-            AVG_PRICE, MIN_PRICE, MAX_PRICE, TOTAL_VALUE
-        )
-        SELECT 
-            'BY_REGION',
-            p_start_date,
-            p_end_date,
-            'REGION',
-            r.REGION,
-            COUNT(*),
-            ROUND(AVG(v.PRICE), 2),
-            MIN(v.PRICE),
-            MAX(v.PRICE),
-            SUM(v.PRICE)
-        FROM VEHICLES v
-        INNER JOIN REGIONS r ON v.REGION_ID = r.ID
-        WHERE v.POSTING_DATE BETWEEN p_start_date AND p_end_date
-        AND v.PRICE IS NOT NULL
-        GROUP BY r.ID, r.REGION;
-        
-    -- Generar reporte por año
-    ELSIF p_report_type = 'BY_YEAR' THEN
-        INSERT INTO VEHICLE_REPORTS (
-            REPORT_TYPE, PERIOD_START, PERIOD_END,
-            DIMENSION_KEY, DIMENSION_VALUE, TOTAL_VEHICLES,
-            AVG_PRICE, MIN_PRICE, MAX_PRICE, TOTAL_VALUE
-        )
-        SELECT 
-            'BY_YEAR',
-            p_start_date,
-            p_end_date,
-            'YEAR',
-            TO_CHAR(v.YEAR),
-            COUNT(*),
-            ROUND(AVG(v.PRICE), 2),
-            MIN(v.PRICE),
-            MAX(v.PRICE),
-            SUM(v.PRICE)
-        FROM VEHICLES v
-        WHERE v.POSTING_DATE BETWEEN p_start_date AND p_end_date
-        AND v.PRICE IS NOT NULL
-        AND v.YEAR IS NOT NULL
-        GROUP BY v.YEAR
-        ORDER BY v.YEAR;
-    END IF;
-    
-    COMMIT;
-    
-    -- Registrar en auditoría
-    SP_REGISTER_AUDIT(
-        p_table_name => 'VEHICLE_REPORTS',
-        p_operation_type => 'GENERATE',
-        p_affected_rows => SQL%ROWCOUNT,
-        p_additional_info => 'Reporte ' || p_report_type || ' generado para período ' || 
-                             TO_CHAR(p_start_date, 'DD/MM/YYYY') || ' - ' || TO_CHAR(p_end_date, 'DD/MM/YYYY')
-    );
-    
-    -- Mostrar resumen
-    SELECT COUNT(*) INTO v_count FROM VEHICLE_REPORTS 
-    WHERE REPORT_TYPE = p_report_type 
-    AND PERIOD_START = p_start_date 
-    AND PERIOD_END = p_end_date;
-    
-    DBMS_OUTPUT.PUT_LINE('Reporte generado exitosamente con ' || v_count || ' registros');
-    
-EXCEPTION
-    WHEN OTHERS THEN
-        ROLLBACK;
-        SP_REGISTER_AUDIT(
-            p_table_name => 'VEHICLE_REPORTS',
-            p_operation_type => 'ERROR',
-            p_affected_rows => 0,
-            p_additional_info => 'Error generando reporte: ' || SQLERRM
-        );
-        RAISE;
-END SP_GENERATE_VEHICLE_REPORT;
-/
+PROMPT 'Procedimientos básicos de carga creados exitosamente'
