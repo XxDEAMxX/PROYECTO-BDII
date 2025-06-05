@@ -1,30 +1,93 @@
-# Guía de Despliegue Rápido - Sistema de Gestión de Vehículos
+# Guía de Despliegue - Sistema de Gestión de Vehículos
 
-## 🚀 Instalación Completa (5 minutos)
+**Autores:** Daniel Arevalo - Alex Hernandez  
+**Fecha:** Junio 2025  
+**Versión:** 2.0 (Con Sistema de Auditoría Completo)
 
-### Prerrequisitos
-- Oracle Database 11g o superior
-- SQL*Plus o SQL Developer
-- Usuario con privilegios DBA (para crear tablespaces y usuarios)
+## 🎯 Objetivo
 
-### Paso 1: Instalación Automática
+Desplegar el sistema completo de gestión de vehículos con control de auditoría automático que registra todas las operaciones DML según los requisitos del proyecto.
+
+## ✅ Checklist Pre-Instalación
+
+- [ ] Oracle Database 11g o superior instalado y funcionando
+- [ ] Usuario DBA disponible para crear tablespaces y usuarios
+- [ ] Mínimo 100MB de espacio en disco disponible
+- [ ] SQL*Plus o herramienta compatible instalada
+- [ ] Todos los archivos SQL del proyecto disponibles
+
+## 🚀 Proceso de Instalación
+
+### Paso 1: Instalación Automática (RECOMENDADO)
+
 ```sql
--- Conectar como DBA
-sqlplus system/password@database
+-- Conectar como usuario DBA
+sqlplus sys/password@XE as sysdba
 
 -- Ejecutar instalación completa
 @MASTER_INSTALL.sql
 ```
 
-### Paso 2: Cargar Datos (Elegir una opción)
+**✅ Resultado esperado:** 
+- Sistema base instalado
+- Sistema de auditoría activado
+- Mensaje: "INSTALACIÓN COMPLETADA EXITOSAMENTE"
 
-#### Opción A: SQL*Loader (Recomendado)
-```bash
-sqlldr CARS_USER/A123@XE control=11_load_csv.ctl log=load_csv.log
-sqlplus CARS_USER/A123@XE @07_data_load.sql
+### Paso 2: Verificar Instalación
+
+```sql
+-- Verificar usuario y tablespaces
+SELECT USERNAME, CREATED FROM DBA_USERS WHERE USERNAME = 'CARS_USER';
+
+-- Verificar tablas principales
+SELECT TABLE_NAME FROM USER_TABLES ORDER BY TABLE_NAME;
+
+-- Verificar sistema de auditoría
+SELECT COUNT(*) AS AUDIT_TRIGGERS FROM USER_TRIGGERS WHERE TRIGGER_NAME LIKE 'TRG_%';
 ```
 
-#### Opción B: PowerShell (Windows)
+**✅ Resultado esperado:**
+- Usuario CARS_USER creado
+- 8 tablas principales creadas
+- 15+ triggers de auditoría activos
+
+## 📊 Pruebas del Sistema de Auditoría
+
+### Paso 3: Probar Sistema de Auditoría
+
+```sql
+-- Ejecutar pruebas de auditoría
+@14_test_audit.sql
+```
+
+**✅ Resultado esperado:**
+- Registros de INSERT, UPDATE, DELETE en AUDIT_CONTROL
+- Vistas de auditoría funcionando correctamente
+- Contadores de operaciones registrados
+
+### Paso 4: Verificar Consultas de Auditoría
+
+```sql
+-- Ejecutar consultas de auditoría
+@15_audit_queries.sql
+```
+
+**✅ Resultado esperado:**
+- Resumen de actividad por tabla
+- Estadísticas por usuario
+- Análisis de rendimiento
+
+## 📈 Carga de Datos
+
+### Paso 5: Cargar Datos de Prueba
+
+**Opción A: Datos de Prueba Directos**
+```sql
+@11_load_csv_direct.sql
+@07_data_load.sql
+```
+
+**Opción B: PowerShell Automatizado**
 ```powershell
 .\Load-CSV-Data.ps1
 sqlplus CARS_USER/A123@XE @07_data_load.sql

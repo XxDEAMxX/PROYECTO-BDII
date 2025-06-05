@@ -45,14 +45,19 @@ PROMPT === PASO 7: Creando vistas ===
 @@08_views.sql
 
 PROMPT 
+PROMPT === PASO 8: Implementando sistema de control de auditoría ===
+@@13_audit_control.sql
+
+PROMPT 
 PROMPT ===============================================
 PROMPT INSTALACIÓN COMPLETADA EXITOSAMENTE
+PROMPT Sistema de auditoría activado automáticamente
 PROMPT ===============================================
 PROMPT 
 PROMPT === OPCIONES PARA CARGAR DATOS ===
 PROMPT 
 PROMPT Opción 1 - SQL*Loader (recomendado):
-PROMPT   1. Ejecutar: sqlldr CARS_USER/A123@XE control=11_load_csv.ctl
+PROMPT   1. Ejecutar: sqlldr CARS_USER/A123@XEPDB1 control=11_load_csv.ctl
 PROMPT   2. Ejecutar: @@07_data_load.sql
 PROMPT 
 PROMPT Opción 2 - PowerShell automatizado:
@@ -68,6 +73,9 @@ PROMPT
 PROMPT Para probar el sistema: @@12_full_test.sql
 PROMPT Para consultas de ejemplo: @@09_sample_queries.sql
 PROMPT Para limpiar datos: @@10_cleanup.sql
+PROMPT Para probar auditoría: @@14_test_audit.sql
+PROMPT Para consultas de auditoría: @@15_audit_queries.sql
+PROMPT Para verificación final: @@16_final_verification.sql
 PROMPT 
 PROMPT ===============================================
 

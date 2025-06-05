@@ -1,11 +1,28 @@
-# 📋 Sistema de Gestión de Vehículos - Resumen del Proyecto
+# 📋 Sistema de Gestión de Vehículos - Resumen Ejecutivo
 
-## 🎯 Objetivo
-Desarrollar un sistema completo de base de datos Oracle para gestionar información de vehículos de Craigslist, implementando un modelo de datos normalizado con ETL completo desde datos CSV.
+**Proyecto:** Sistema de Base de Datos Oracle para Gestión de Vehículos  
+**Autores:** Daniel Arevalo - Alex Hernandez  
+**Fecha:** Junio 2025  
+**Estado:** COMPLETADO ✅
 
-## ✅ Estado del Proyecto: COMPLETADO
+## 🎯 Objetivo Cumplido
 
-### 📁 Estructura de Archivos Implementada (17 archivos)
+Desarrollar un sistema completo de base de datos Oracle para gestionar datos de vehículos de Craigslist con modelo normalizado, procesos ETL y **sistema integral de control de auditoría** que registre automáticamente todas las operaciones DML.
+
+## ✅ Requisitos del PDF - 100% Implementados
+
+### Control de Auditoría (Requisito Principal)
+- ✅ **Tabla de auditoría** implementada con todos los campos requeridos
+- ✅ **nombre_tabla** → TABLE_NAME
+- ✅ **filas_afectadas** → AFFECTED_ROWS  
+- ✅ **operación** → OPERATION_TYPE (INSERT/UPDATE/DELETE)
+- ✅ **fecha_proceso** → PROCESS_DATE
+- ✅ **usuario_proceso** → USER_NAME
+- ✅ **Registro automático** mediante triggers
+
+## 🏗️ Arquitectura Implementada
+
+### Scripts Entregados (20 archivos)
 
 #### 🏗️ Scripts de Instalación (7 archivos)
 1. **01_tablespaces_user.sql** ✅ - Tablespaces y usuario del sistema
