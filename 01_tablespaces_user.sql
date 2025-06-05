@@ -1,0 +1,34 @@
+-- =====================================================
+-- SCRIPT: 01_tablespaces_user.sql
+-- PROPOSITO: Crear tablespaces y usuario para el proyecto
+-- AUTOR: Daniel Arevalo - Alex Hernandez
+-- FECHA: Junio 2025
+-- =====================================================
+
+-- Crear tablespace para datos
+CREATE TABLESPACE TS_DATOS
+   DATAFILE 'ts_datos01.dbf' SIZE 300M
+   AUTOEXTEND ON NEXT 10M MAXSIZE UNLIMITED;
+
+-- Tablespace para índices
+CREATE TABLESPACE TS_INDICES
+   DATAFILE 'ts_indices01.dbf' SIZE 50M
+   AUTOEXTEND ON NEXT 10M MAXSIZE UNLIMITED;
+
+-- Crear usuario
+CREATE USER CARS_USER IDENTIFIED BY A123
+   DEFAULT TABLESPACE TS_DATOS
+   TEMPORARY TABLESPACE TEMP
+   QUOTA UNLIMITED ON TS_DATOS
+   QUOTA UNLIMITED ON TS_INDICES;
+
+-- Permisos necesarios para el usuario
+GRANT CREATE SESSION TO CARS_USER;
+GRANT CREATE TABLE TO CARS_USER;
+GRANT CREATE VIEW TO CARS_USER;
+GRANT CREATE PROCEDURE TO CARS_USER;
+GRANT CREATE TRIGGER TO CARS_USER;
+GRANT CREATE SEQUENCE TO CARS_USER;
+GRANT CREATE SYNONYM TO CARS_USER;
+
+COMMIT;
