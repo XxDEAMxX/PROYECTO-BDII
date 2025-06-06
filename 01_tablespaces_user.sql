@@ -33,9 +33,6 @@ GRANT CREATE SEQUENCE TO CARS_USER;
 
 COMMIT;
 
-
-
-
 --validacion de permisos
 
 SELECT grantee, granted_role
