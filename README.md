@@ -8,7 +8,7 @@ Sistema de base de datos Oracle para gestión de datos de vehículos de Craigsli
 **Fecha:** Junio 2025  
 **Base de Datos:** Oracle Database XE  
 
-## 🏗️ Arquitectura del Sistema
+## Arquitectura del Sistema
 
 ### Modelo de Datos
 - **Tablas principales:** VEHICLES, MANUFACTURERS, REGIONS
@@ -17,13 +17,13 @@ Sistema de base de datos Oracle para gestión de datos de vehículos de Craigsli
 - **Normalización 3NF** con integridad referencial
 
 ### Características
-- ✅ **Control de auditoría automático**
-- ✅ **Validación de fechas laborales**
-- ✅ **Procesos ETL** con validación de datos
-- ✅ **Índices optimizados** para consultas
-- ✅ **Vistas de negocio** para análisis
+- **Control de auditoría automático**
+- **Validación de fechas laborales**
+- **Procesos ETL** con validación de datos
+- **Índices optimizados** para consultas
+- **Vistas de negocio** para análisis
 
-## 📁 Estructura del Proyecto
+## Estructura del Proyecto
 
 ### Scripts Principales (ejecutar en orden)
 
@@ -51,7 +51,7 @@ Sistema de base de datos Oracle para gestión de datos de vehículos de Craigsli
 
 - **nuevo_vehiculos.csv** - Dataset de 1000+ vehículos
 
-## 🚀 Instalación
+## Instalación
 
 ### Paso a Paso
 
@@ -69,7 +69,7 @@ Sistema de base de datos Oracle para gestión de datos de vehículos de Craigsli
 @08_views.sql
 ```
 
-## 📊 Carga de Datos Masivos
+## Carga de Datos Masivos
 
 ### Usando DataGrip
 
@@ -90,7 +90,7 @@ TRUNCATE TABLE TMP_CRAIGSLIST_VEHICLES;
 @07_data_load.sql
 ```
 
-## 🔧 Funcionalidades Principales
+## Funcionalidades Principales
 
 ### Validación de Fechas Laborales
 ```sql
@@ -112,7 +112,7 @@ SELECT * FROM VW_VEHICLES_COMPLETE;
 SELECT * FROM VW_STATS_BY_MANUFACTURER;
 ```
 
-## 🧪 Verificación y Pruebas
+## Verificación y Pruebas
 
 ### Diagnóstico Rápido
 ```sql
@@ -129,7 +129,7 @@ SELECT * FROM VW_STATS_BY_MANUFACTURER;
 @09_sample_queries.sql
 ```
 
-## ⚠️ Instrucciones Post-Corrección
+## Instrucciones Post-Corrección
 
 **Para usar el sistema corregido:**
 
@@ -143,21 +143,3 @@ CONNECT CARS_USER/A123@localhost:1521/xe
 ```sql
 @07_data_load.sql
 ```
-
-3. **Verificar resultados:**
-```sql
-@diagnostico_urgente.sql
-SELECT COUNT(*) FROM VEHICLES;  -- Debe mostrar 1000+ registros
-```
-
-## 🔧 Correcciones Aplicadas (v1.0 Final)
-
-- ✅ **Procedimiento LOAD_VEHICLES corregido** - Carga todos los registros
-- ✅ **Normalización de comparaciones** - Uso de UPPER/LOWER 
-- ✅ **Manejo mejorado de fechas** - Conversión robusta desde CSV
-- ✅ **Logging detallado** - Seguimiento de errores
-- ✅ **Performance:** 27 vehículos → 1000+ vehículos completos
-
----
-
-**Proyecto completado por:** Daniel Arevalo - Alex Hernandez | Junio 2025
