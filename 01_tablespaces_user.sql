@@ -6,6 +6,8 @@
 -- =====================================================
 
 -- Crear tablespace para datos
+drop user cars_user cascade;
+
 CREATE TABLESPACE TS_DATOS
    DATAFILE 'ts_datos01.dbf' SIZE 300M
    AUTOEXTEND ON NEXT 10M MAXSIZE UNLIMITED;
